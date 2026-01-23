@@ -35,6 +35,7 @@ pnpm test
 
 - Load ready-made scenarios for AU bushfires and Africa flood/cyclone response.
 - Paste TLEs or generate circular orbits, add ground stations, and set AOI/time windows.
+- Use the scenario editor's slider-driven controls and grid-style coordinate inputs for faster, less error-prone mission setup.
 - See access windows, contact windows, revisit stats, and incident serviceability scores.
 - Track data freshness with live source timestamps and offline/cache warnings.
 
