@@ -1,0 +1,10 @@
+Project name: LETO
+Copyright (c) 2026 Ebenezer Ajaero
+Licence: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+
+Data sources and attribution
+- NASA FIRMS: Active Fire data. Near real-time; latency varies by product and region. Check timestamps.
+- GDACS: Global Disaster Alert and Coordination System feeds for hazard alerts.
+- Optional: Digital Earth Australia Hotspots (if configured by the user).
+
+Third-party dependencies are provided under their respective licences.

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:georss="http://www.georss.org/georss" xmlns:gdacs="http://www.gdacs.org">
+  <channel>
+    <title>GDACS Sample</title>
+    <item>
+      <title>Flood - Mozambique</title>
+      <guid>gdacs-sample-1</guid>
+      <gdacs:hazard>FL</gdacs:hazard>
+      <gdacs:severity>2.5</gdacs:severity>
+      <pubDate>Fri, 10 Jan 2026 02:00:00 GMT</pubDate>
+      <georss:point>-18.5 35.0</georss:point>
+    </item>
+    <item>
+      <title>Cyclone - Northern QLD</title>
+      <guid>gdacs-sample-2</guid>
+      <gdacs:hazard>TC</gdacs:hazard>
+      <gdacs:severity>3.2</gdacs:severity>
+      <pubDate>Fri, 10 Jan 2026 03:30:00 GMT</pubDate>
+      <georss:point>-16.9 145.7</georss:point>
+    </item>
+  </channel>
+</rss>
