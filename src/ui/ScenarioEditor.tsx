@@ -79,7 +79,7 @@ export function ScenarioEditor({
             <p className="text-sm font-semibold">Scenario setup</p>
             <p className="text-xs text-slate-500">Select a preset and tune the simulation window.</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <label>
               <div className="mb-2 text-xs font-semibold text-slate-500">Preset</div>
               <select
@@ -100,31 +100,49 @@ export function ScenarioEditor({
               </select>
             </label>
 
-            <label>
-              <div className="mb-2 text-xs font-semibold text-slate-500">Time Window</div>
-              <select
-                className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-slate-500">Time Window</p>
+                <span className="rounded-full border border-blush-200 bg-white px-3 py-1 text-[11px] font-semibold text-blush-600">{scenario.horizonHours} hours</span>
+              </div>
+              <input
+                type="range"
+                min={6}
+                max={24}
+                step={6}
                 value={scenario.horizonHours}
                 onChange={(event) => setScenario(updateScenario(scenario, { horizonHours: Number(event.target.value) as Scenario['horizonHours'] }))}
-              >
-                <option value={6}>6 hours</option>
-                <option value={12}>12 hours</option>
-                <option value={24}>24 hours</option>
-              </select>
-            </label>
+                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-blush-100 accent-blush-500"
+              />
+              <div className="flex justify-between text-[11px] text-slate-400">
+                <span>6h</span>
+                <span>12h</span>
+                <span>18h</span>
+                <span>24h</span>
+              </div>
+            </div>
 
-            <label>
-              <div className="mb-2 text-xs font-semibold text-slate-500">Timestep</div>
-              <select
-                className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-slate-500">Timestep</p>
+                <span className="rounded-full border border-blush-200 bg-white px-3 py-1 text-[11px] font-semibold text-blush-600">{scenario.timestepSec} s</span>
+              </div>
+              <input
+                type="range"
+                min={30}
+                max={120}
+                step={30}
                 value={scenario.timestepSec}
                 onChange={(event) => setScenario(updateScenario(scenario, { timestepSec: Number(event.target.value) as Scenario['timestepSec'] }))}
-              >
-                <option value={30}>30 s</option>
-                <option value={60}>60 s</option>
-                <option value={120}>120 s</option>
-              </select>
-            </label>
+                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-blush-100 accent-blush-500"
+              />
+              <div className="flex justify-between text-[11px] text-slate-400">
+                <span>30s</span>
+                <span>60s</span>
+                <span>90s</span>
+                <span>120s</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -135,43 +153,40 @@ export function ScenarioEditor({
             <p className="text-sm font-semibold">Area of interest</p>
             <p className="text-xs text-slate-500">Define the AOI rectangle the engine will optimize for.</p>
           </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <label>
-              <div className="mb-2 text-xs font-semibold text-slate-500">Lat min</div>
+          <div className="rounded-2xl border border-blush-100 bg-white/80 p-3 shadow-sm">
+            <div className="grid grid-cols-3 text-[11px] font-semibold text-slate-400">
+              <span />
+              <span>Latitude</span>
+              <span>Longitude</span>
+            </div>
+            <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
+              <span className="self-center text-xs font-semibold text-slate-500">Min</span>
               <input
-                className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
+                className="rounded-2xl border border-blush-100 bg-white px-3 py-2 shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
                 type="number"
                 value={scenario.aoi.latMin}
                 onChange={(event) => setScenario(updateScenario(scenario, { aoi: { ...scenario.aoi, latMin: Number(event.target.value) } }))}
               />
-            </label>
-            <label>
-              <div className="mb-2 text-xs font-semibold text-slate-500">Lat max</div>
               <input
-                className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
-                type="number"
-                value={scenario.aoi.latMax}
-                onChange={(event) => setScenario(updateScenario(scenario, { aoi: { ...scenario.aoi, latMax: Number(event.target.value) } }))}
-              />
-            </label>
-            <label>
-              <div className="mb-2 text-xs font-semibold text-slate-500">Lon min</div>
-              <input
-                className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
+                className="rounded-2xl border border-blush-100 bg-white px-3 py-2 shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
                 type="number"
                 value={scenario.aoi.lonMin}
                 onChange={(event) => setScenario(updateScenario(scenario, { aoi: { ...scenario.aoi, lonMin: Number(event.target.value) } }))}
               />
-            </label>
-            <label>
-              <div className="mb-2 text-xs font-semibold text-slate-500">Lon max</div>
+              <span className="self-center text-xs font-semibold text-slate-500">Max</span>
               <input
-                className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
+                className="rounded-2xl border border-blush-100 bg-white px-3 py-2 shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
+                type="number"
+                value={scenario.aoi.latMax}
+                onChange={(event) => setScenario(updateScenario(scenario, { aoi: { ...scenario.aoi, latMax: Number(event.target.value) } }))}
+              />
+              <input
+                className="rounded-2xl border border-blush-100 bg-white px-3 py-2 shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
                 type="number"
                 value={scenario.aoi.lonMax}
                 onChange={(event) => setScenario(updateScenario(scenario, { aoi: { ...scenario.aoi, lonMax: Number(event.target.value) } }))}
               />
-            </label>
+            </div>
           </div>
         </div>
 
@@ -191,15 +206,21 @@ export function ScenarioEditor({
               placeholder="Optional"
             />
           </label>
-          <label>
-            <div className="mb-2 text-xs font-semibold text-slate-500">Footprint half-angle (deg)</div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-slate-500">Footprint half-angle (deg)</p>
+              <span className="rounded-full border border-blush-200 bg-white px-3 py-1 text-[11px] font-semibold text-blush-600">{footprintHalfAngleDeg}°</span>
+            </div>
             <input
-              className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
-              type="number"
+              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-blush-100 accent-blush-500"
+              type="range"
+              min={5}
+              max={60}
+              step={1}
               value={footprintHalfAngleDeg}
               onChange={(event) => setFootprintHalfAngleDeg(Number(event.target.value))}
             />
-          </label>
+          </div>
 
           <div className="space-y-2 rounded-2xl border border-blush-100 bg-white/80 p-3 shadow-sm">
             <div className="flex items-center justify-between gap-2">
