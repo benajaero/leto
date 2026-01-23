@@ -133,5 +133,10 @@ export function MapView({ scenario, incidents, output, onIncidentSelect }: { sce
     mapRef.current.easeTo({ center: [centerLon, centerLat], zoom });
   }, [scenario]);
 
-  return <div className="map" ref={containerRef} />;
+  return (
+    <div
+      className="h-[320px] w-full overflow-hidden rounded-3xl border border-blush-100 bg-white shadow-panel sm:h-[380px] lg:h-[520px] xl:h-[560px]"
+      ref={containerRef}
+    />
+  );
 }

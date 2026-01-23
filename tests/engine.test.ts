@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseTleSatrec, propagateTle, propagateCircularOrbit } from '../src/engine/orbit';
+import { parseTleSatrec, propagateTle } from '../src/engine/orbit';
 import { footprintRadiusKm } from '../src/engine/geometry';
 import { computeScenario } from '../src/engine/compute';
 import type { Scenario } from '../src/engine/types';

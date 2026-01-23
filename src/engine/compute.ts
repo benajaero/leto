@@ -3,7 +3,6 @@ import type {
   EngineOutput,
   Incident,
   RevisitMetrics,
-  SatelliteDef,
   Scenario
 } from './types';
 import type { SatelliteOutput, TrackPoint, AccessWindow, IncidentMetrics } from './types';
