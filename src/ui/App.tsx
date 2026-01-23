@@ -23,7 +23,8 @@ export function App() {
   const setSelectedIncidentId = useStore((state) => state.setSelectedIncidentId);
   const setDataSources = useStore((state) => state.setDataSources);
 
-  const [filters, setFilters] = useState({ hours: 48, minConfidence: 0, minSeverity: 0 });
+  const defaultFilters = { hours: 48, minConfidence: 0, minSeverity: 0 };
+  const [filters, setFilters] = useState(defaultFilters);
   const [layerToggles, setLayerToggles] = useState(() => ({
     firms: scenario.display?.layerToggles?.firms ?? true,
     gdacs: scenario.display?.layerToggles?.gdacs ?? true,
@@ -174,6 +175,19 @@ export function App() {
                   <span className="rounded-full border border-blush-200 bg-blush-50 px-3 py-1">Scenario-driven planning</span>
                 </div>
               </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Filters</p>
+                  <p className="text-xs text-slate-500">Tune the incident feed before running analysis.</p>
+                </div>
+                <button
+                  type="button"
+                  className="rounded-full border border-blush-200 bg-white px-4 py-2 text-[11px] font-semibold text-blush-600 shadow-sm hover:border-blush-300 transition"
+                  onClick={() => setFilters(defaultFilters)}
+                >
+                  Reset filters
+                </button>
+              </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="space-y-2">
                   <p className="text-sm font-semibold">Incident age</p>
@@ -195,6 +209,8 @@ export function App() {
                     <input
                       className="w-full bg-transparent outline-none"
                       type="number"
+                      min={0}
+                      max={100}
                       value={filters.minConfidence}
                       onChange={(event) => setFilters({ ...filters, minConfidence: Number(event.target.value) })}
                     />
@@ -208,6 +224,7 @@ export function App() {
                     <input
                       className="w-full bg-transparent outline-none"
                       type="number"
+                      min={0}
                       value={filters.minSeverity}
                       onChange={(event) => setFilters({ ...filters, minSeverity: Number(event.target.value) })}
                     />
