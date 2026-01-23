@@ -49,12 +49,12 @@ M5 — Tests + validation
 
 ## Dev commands
 
-- Install: `npm install`
-- Dev server: `npm run dev`
-- Build: `npm run build`
-- Preview: `npm run preview`
-- Test: `npm test`
-- Lint: `npm run lint`
+- Install: `pnpm install`
+- Dev server: `pnpm run dev`
+- Build: `pnpm run build`
+- Preview: `pnpm run preview`
+- Test: `pnpm test`
+- Lint: `pnpm run lint`
 
 ## Worker message protocol
 

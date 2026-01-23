@@ -21,14 +21,14 @@ LETO is not a mapping provider; it is a mission + ops decision layer: given sate
 ## Quick start
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Run tests:
 
 ```bash
-npm test
+pnpm test
 ```
 
 ## What you can do
