@@ -31,6 +31,10 @@ Run tests:
 pnpm test
 ```
 
+## Contributing
+
+See `CONTRIBUTING.md` for workflow, testing, and spec updates. By participating, you agree to the `CODE_OF_CONDUCT.md`.
+
 ## What you can do
 
 - Load ready-made scenarios for AU bushfires and Africa flood/cyclone response.
