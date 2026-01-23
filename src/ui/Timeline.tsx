@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { EngineOutput, Scenario } from '../engine/types';
 import { haversineKm } from '../engine/geometry';
 
@@ -20,6 +21,10 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
   const incident = output.incidentMetrics.find((item) => item.incidentId === selectedIncidentId);
 
   const formatMinutes = (seconds: number) => `${(seconds / 60).toFixed(1)} min`;
+  const [focusNextSixHours, setFocusNextSixHours] = useState(true);
+  const focusCutoff = new Date(scenario.startTimeUtc).getTime() + 6 * 3600 * 1000;
+
+  const filterWindow = (startUtc: string) => !focusNextSixHours || new Date(startUtc).getTime() <= focusCutoff;
 
   const buildWindows = (flags: boolean[], times: string[]) => {
     const result: { startUtc: string; endUtc: string }[] = [];
@@ -57,14 +62,27 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
     <section className="rounded-3xl border border-blush-100 bg-white/85 p-6 shadow-panel backdrop-blur motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]">
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Timeline</h2>
-          <p className="text-xs text-slate-500">Access windows and downlink readiness.</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-semibold">Timeline</h2>
+              <p className="text-xs text-slate-500">Access windows and downlink readiness.</p>
+            </div>
+            <label className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-blush-200 text-blush-500 focus:ring-blush-200"
+                checked={focusNextSixHours}
+                onChange={(event) => setFocusNextSixHours(event.target.checked)}
+              />
+              Next 6 hours only
+            </label>
+          </div>
         </div>
         <div className="space-y-3">
           <div>
             <h3 className="text-sm font-semibold">AOI Access Windows</h3>
             <ul className="mt-2 space-y-1 text-sm text-slate-500">
-              {windows.slice(0, 10).map((window, idx) => (
+              {windows.filter((window) => filterWindow(window.startUtc)).slice(0, 10).map((window, idx) => (
                 <li key={`${window.satName}-${idx}`}>{window.satName}: {window.startUtc} → {window.endUtc}</li>
               ))}
             </ul>
@@ -92,7 +110,7 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
                   <div key={sat.satName} className="rounded-2xl border border-blush-100 bg-white/80 p-3 shadow-sm">
                     <p className="text-xs font-semibold text-slate-400">{sat.satName}</p>
                     <ul className="mt-1 space-y-1">
-                      {sat.windows.slice(0, 3).map((window, idx) => (
+                      {sat.windows.filter((window) => filterWindow(window.startUtc)).slice(0, 3).map((window, idx) => (
                         <li key={`${sat.satName}-${idx}`}>{window.startUtc} → {window.endUtc}</li>
                       ))}
                       {sat.windows.length === 0 && <li>No observation windows</li>}
@@ -112,7 +130,7 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
                     <div key={station.id} className="rounded-2xl border border-blush-100 bg-white/80 p-3 shadow-sm">
                       <p className="text-xs font-semibold text-slate-400">{station.name}</p>
                       <ul className="mt-1 space-y-1">
-                        {windows.slice(0, 3).map((window, idx) => (
+                        {windows.filter((window) => filterWindow(window.startUtc)).slice(0, 3).map((window, idx) => (
                           <li key={`${station.id}-${idx}`}>{window.startUtc} → {window.endUtc}</li>
                         ))}
                         {windows.length === 0 && <li>No contact</li>}
