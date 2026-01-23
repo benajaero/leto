@@ -9,6 +9,7 @@ export type SatelliteTle = {
   type: 'tle';
   line1: string;
   line2: string;
+  footprintHalfAngleDeg?: number;
 };
 
 export type SatelliteCircular = {
@@ -19,6 +20,7 @@ export type SatelliteCircular = {
   inclinationDeg: number;
   raanDeg: number;
   meanAnomalyDeg: number;
+  footprintHalfAngleDeg?: number;
 };
 
 export type SatelliteDef = SatelliteTle | SatelliteCircular;

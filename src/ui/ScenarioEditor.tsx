@@ -19,6 +19,7 @@ export function ScenarioEditor({
 
   const [tleText, setTleText] = useState('');
   const [satName, setSatName] = useState('');
+  const [footprintHalfAngleDeg, setFootprintHalfAngleDeg] = useState(25);
   const [orbitInputs, setOrbitInputs] = useState({ altitudeKm: 550, inclinationDeg: 97, raanDeg: 0, meanAnomalyDeg: 0 });
   const [stationInputs, setStationInputs] = useState({ name: '', lat: -35, lon: 149, maskDeg: 10 });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -33,7 +34,8 @@ export function ScenarioEditor({
       name: satName || `TLE-${scenario.satellites.length + 1}`,
       type: 'tle',
       line1: lines[0],
-      line2: lines[1]
+      line2: lines[1],
+      footprintHalfAngleDeg
     };
     setScenario(updateScenario(scenario, { satellites: [...scenario.satellites, newSat] }));
     setTleText('');
@@ -45,7 +47,8 @@ export function ScenarioEditor({
       id: `sat-${Date.now()}`,
       name: satName || `Circular-${scenario.satellites.length + 1}`,
       type: 'circular',
-      ...orbitInputs
+      ...orbitInputs,
+      footprintHalfAngleDeg
     };
     setScenario(updateScenario(scenario, { satellites: [...scenario.satellites, newSat] }));
     setSatName('');
@@ -186,6 +189,15 @@ export function ScenarioEditor({
               value={satName}
               onChange={(event) => setSatName(event.target.value)}
               placeholder="Optional"
+            />
+          </label>
+          <label>
+            <div className="mb-2 text-xs font-semibold text-slate-500">Footprint half-angle (deg)</div>
+            <input
+              className="w-full rounded-2xl border border-blush-100 bg-white px-3 py-2 text-sm shadow-sm focus:border-blush-300 focus:outline-none focus:ring-2 focus:ring-blush-200"
+              type="number"
+              value={footprintHalfAngleDeg}
+              onChange={(event) => setFootprintHalfAngleDeg(Number(event.target.value))}
             />
           </label>
 

@@ -132,6 +132,7 @@ export function computeScenario(
   scenario.satellites.forEach((sat, idx) => {
     const satrec = sat.type === 'tle' ? parseTleSatrec(sat) : null;
     const track: TrackPoint[] = [];
+    const footprintHalfAngle = sat.footprintHalfAngleDeg ?? FOOTPRINT_HALF_ANGLE_DEG;
     const aoiFlags: boolean[] = [];
     const stationFlags: Record<string, boolean[]> = {};
     const stationElevations: Record<string, number[]> = {};
@@ -150,7 +151,7 @@ export function computeScenario(
           stationElevations[station.id].push(-90);
         });
       } else {
-        const footprintKm = footprintRadiusKm(point.altKm, FOOTPRINT_HALF_ANGLE_DEG);
+        const footprintKm = footprintRadiusKm(point.altKm, footprintHalfAngle);
         const subpoint = { lat: point.lat, lon: point.lon };
         track.push({
           timeUtc: time.toISOString(),
