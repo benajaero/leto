@@ -22,6 +22,13 @@ export function MetricsPanel({ output, incidents, onSelectIncident }: { output: 
     return `${(seconds / 3600).toFixed(1)} h`;
   };
 
+  const coverageValues = output.heatmap.map((cell) => cell.coverageFraction);
+  const coverageMin = coverageValues.length ? Math.min(...coverageValues) : 0;
+  const coverageMax = coverageValues.length ? Math.max(...coverageValues) : 0;
+  const coverageAvg = coverageValues.length ? coverageValues.reduce((a, b) => a + b, 0) / coverageValues.length : 0;
+
+  const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
+
   const ranked = output.incidentMetrics
     .map((metric) => ({
       ...metric,
@@ -47,7 +54,7 @@ export function MetricsPanel({ output, incidents, onSelectIncident }: { output: 
           <div className="rounded-2xl border border-blush-100 bg-white/80 p-4 shadow-sm">
             <p className="text-xs font-semibold text-slate-400">Coverage cells</p>
             <p className="mt-2 text-2xl font-semibold text-slate-900">{output.heatmap.length}</p>
-            <p className="text-xs text-slate-500">Heatmap resolution</p>
+            <p className="text-xs text-slate-500">Min/avg/max: {formatPercent(coverageMin)} / {formatPercent(coverageAvg)} / {formatPercent(coverageMax)}</p>
           </div>
         </div>
         <div>

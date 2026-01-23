@@ -1,4 +1,5 @@
 import type { EngineOutput, Scenario } from '../engine/types';
+import { haversineKm } from '../engine/geometry';
 
 export function Timeline({ output, scenario, selectedIncidentId }: { output: EngineOutput | null; scenario: Scenario; selectedIncidentId: string | null }) {
   if (!output) {
@@ -19,6 +20,38 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
   const incident = output.incidentMetrics.find((item) => item.incidentId === selectedIncidentId);
 
   const formatMinutes = (seconds: number) => `${(seconds / 60).toFixed(1)} min`;
+
+  const buildWindows = (flags: boolean[], times: string[]) => {
+    const result: { startUtc: string; endUtc: string }[] = [];
+    let openIndex: number | null = null;
+    for (let i = 0; i < flags.length; i += 1) {
+      if (flags[i] && openIndex === null) {
+        openIndex = i;
+      }
+      if (!flags[i] && openIndex !== null) {
+        result.push({ startUtc: times[openIndex], endUtc: times[i - 1] });
+        openIndex = null;
+      }
+    }
+    if (openIndex !== null) {
+      result.push({ startUtc: times[openIndex], endUtc: times[times.length - 1] });
+    }
+    return result;
+  };
+
+  const observationWindows = incident
+    ? output.satellites.map((sat) => {
+        const flags = sat.track.map((point) => haversineKm({ lat: point.lat, lon: point.lon }, { lat: incident.lat, lon: incident.lon }) <= point.footprintKm);
+        return {
+          satName: sat.name,
+          windows: buildWindows(flags, sat.track.map((point) => point.timeUtc))
+        };
+      })
+    : [];
+
+  const servingSatellite = incident?.servingSatellite
+    ? output.satellites.find((sat) => sat.name === incident.servingSatellite)
+    : null;
 
   return (
     <section className="rounded-3xl border border-blush-100 bg-white/85 p-6 shadow-panel backdrop-blur motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]">
@@ -51,19 +84,43 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
               <p className="mt-2 text-sm text-slate-500">Select an incident to view timing.</p>
             )}
           </div>
+          {incident && (
+            <div>
+              <h3 className="text-sm font-semibold">Observation Windows</h3>
+              <div className="mt-2 space-y-2 text-sm text-slate-500">
+                {observationWindows.map((sat) => (
+                  <div key={sat.satName} className="rounded-2xl border border-blush-100 bg-white/80 p-3 shadow-sm">
+                    <p className="text-xs font-semibold text-slate-400">{sat.satName}</p>
+                    <ul className="mt-1 space-y-1">
+                      {sat.windows.slice(0, 3).map((window, idx) => (
+                        <li key={`${sat.satName}-${idx}`}>{window.startUtc} → {window.endUtc}</li>
+                      ))}
+                      {sat.windows.length === 0 && <li>No observation windows</li>}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div>
             <h3 className="text-sm font-semibold">Station Contacts (sample)</h3>
-            {output.satellites.slice(0, 1).map((sat) => (
-              <ul className="mt-2 space-y-1 text-sm text-slate-500" key={sat.id}>
+            {(servingSatellite ? [servingSatellite] : output.satellites.slice(0, 1)).map((sat) => (
+              <div className="mt-2 space-y-2 text-sm text-slate-500" key={sat.id}>
                 {scenario.stations.map((station) => {
                   const windows = sat.stationContacts[station.id] ?? [];
                   return (
-                    <li key={station.id}>
-                      {station.name}: {windows[0]?.startUtc ?? 'No contact'}
-                    </li>
+                    <div key={station.id} className="rounded-2xl border border-blush-100 bg-white/80 p-3 shadow-sm">
+                      <p className="text-xs font-semibold text-slate-400">{station.name}</p>
+                      <ul className="mt-1 space-y-1">
+                        {windows.slice(0, 3).map((window, idx) => (
+                          <li key={`${station.id}-${idx}`}>{window.startUtc} → {window.endUtc}</li>
+                        ))}
+                        {windows.length === 0 && <li>No contact</li>}
+                      </ul>
+                    </div>
                   );
                 })}
-              </ul>
+              </div>
             ))}
           </div>
         </div>

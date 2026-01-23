@@ -19,11 +19,35 @@ function circlePolygon(lat: number, lon: number, radiusKm: number): number[][] {
   return points;
 }
 
-export function MapView({ scenario, incidents, output, onIncidentSelect }: { scenario: Scenario; incidents: Incident[]; output: EngineOutput | null; onIncidentSelect: (id: string) => void }) {
+type LayerToggles = {
+  tracks: boolean;
+  footprints: boolean;
+  stations: boolean;
+};
+
+export function MapView({
+  scenario,
+  incidents,
+  output,
+  onIncidentSelect,
+  selectedIncidentId,
+  layerToggles,
+  visibleSatIds
+}: {
+  scenario: Scenario;
+  incidents: Incident[];
+  output: EngineOutput | null;
+  onIncidentSelect: (id: string) => void;
+  selectedIncidentId: string | null;
+  layerToggles: LayerToggles;
+  visibleSatIds: string[];
+}) {
   const mapRef = useRef<Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const layers = useMemo(() => {
+    const visibleSatSet = new Set(visibleSatIds);
+    const visibleSats = output?.satellites.filter((sat) => visibleSatSet.has(sat.id)) ?? [];
     const aoiPolygon = [
       [scenario.aoi.lonMin, scenario.aoi.latMin],
       [scenario.aoi.lonMax, scenario.aoi.latMin],
@@ -32,58 +56,73 @@ export function MapView({ scenario, incidents, output, onIncidentSelect }: { sce
       [scenario.aoi.lonMin, scenario.aoi.latMin]
     ];
 
-    const trackLayers = output?.satellites.map((sat) =>
-      new PathLayer({
-        id: `track-${sat.id}`,
-        data: [sat.track.map((point) => [point.lon, point.lat])],
-        getPath: (d) => d,
-        getColor: [40, 90, 200],
-        widthUnits: 'pixels',
-        getWidth: 2
-      })
-    ) ?? [];
+    const trackLayers = layerToggles.tracks
+      ? visibleSats.map((sat) =>
+          new PathLayer({
+            id: `track-${sat.id}`,
+            data: [sat.track.map((point) => [point.lon, point.lat])],
+            getPath: (d) => d,
+            getColor: [255, 77, 146],
+            widthUnits: 'pixels',
+            getWidth: 2
+          })
+        )
+      : [];
 
-    const footprintSamples = output?.satellites.flatMap((sat) =>
-      sat.track.filter((_, idx) => idx % 20 === 0).map((point) => ({
-        id: `${sat.id}-${point.timeUtc}`,
-        polygon: circlePolygon(point.lat, point.lon, point.footprintKm)
-      }))
-    ) ?? [];
+    const footprintSamples = layerToggles.footprints
+      ? visibleSats.flatMap((sat) =>
+          sat.track.filter((_, idx) => idx % 20 === 0).map((point) => ({
+            id: `${sat.id}-${point.timeUtc}`,
+            polygon: circlePolygon(point.lat, point.lon, point.footprintKm)
+          }))
+        )
+      : [];
 
     return [
       new PolygonLayer({
         id: 'aoi',
         data: [{ polygon: aoiPolygon }],
         getPolygon: (d) => d.polygon,
-        getFillColor: [255, 200, 50, 60],
-        getLineColor: [255, 140, 0, 180],
+        getFillColor: [255, 120, 173, 50],
+        getLineColor: [255, 120, 173, 180],
         lineWidthUnits: 'pixels',
         getLineWidth: 2
       }),
-      new PolygonLayer({
-        id: 'footprints',
-        data: footprintSamples,
-        getPolygon: (d) => d.polygon,
-        getFillColor: [80, 160, 255, 30],
-        getLineColor: [80, 160, 255, 120],
-        lineWidthUnits: 'pixels',
-        getLineWidth: 1
-      }),
+      ...(layerToggles.footprints
+        ? [
+            new PolygonLayer({
+              id: 'footprints',
+              data: footprintSamples,
+              getPolygon: (d) => d.polygon,
+              getFillColor: [255, 173, 206, 35],
+              getLineColor: [255, 120, 173, 120],
+              lineWidthUnits: 'pixels',
+              getLineWidth: 1
+            })
+          ]
+        : []),
       ...trackLayers,
-      new ScatterplotLayer({
-        id: 'stations',
-        data: scenario.stations,
-        getPosition: (d) => [d.lon, d.lat],
-        getFillColor: [20, 140, 70],
-        getRadius: 12000,
-        radiusUnits: 'meters'
-      }),
+      ...(layerToggles.stations
+        ? [
+            new ScatterplotLayer({
+              id: 'stations',
+              data: scenario.stations,
+              getPosition: (d) => [d.lon, d.lat],
+              getFillColor: [16, 185, 129],
+              getRadius: 12000,
+              radiusUnits: 'meters'
+            })
+          ]
+        : []),
       new ScatterplotLayer({
         id: 'incidents',
         data: incidents,
         getPosition: (d) => [d.lon, d.lat],
-        getFillColor: (d) => (d.source === 'FIRMS' ? [220, 80, 40] : [120, 60, 200]),
-        getRadius: 8000,
+        getFillColor: (d) => {
+          if (d.id === selectedIncidentId) return [255, 77, 146];
+          return d.source === 'FIRMS' ? [255, 99, 71] : [124, 58, 237];
+        },
+        getRadius: (d) => (d.id === selectedIncidentId ? 12000 : 8000),
         radiusUnits: 'meters',
         pickable: true,
         onClick: (info) => {
@@ -93,7 +132,7 @@ export function MapView({ scenario, incidents, output, onIncidentSelect }: { sce
         }
       })
     ];
-  }, [scenario, incidents, output, onIncidentSelect]);
+  }, [scenario, incidents, output, onIncidentSelect, selectedIncidentId, layerToggles, visibleSatIds]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {

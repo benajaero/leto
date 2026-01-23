@@ -24,6 +24,14 @@ export function App() {
   const setDataSources = useStore((state) => state.setDataSources);
 
   const [filters, setFilters] = useState({ hours: 48, minConfidence: 0, minSeverity: 0 });
+  const [layerToggles, setLayerToggles] = useState({
+    firms: true,
+    gdacs: true,
+    tracks: true,
+    footprints: true,
+    stations: true
+  });
+  const [visibleSatIds, setVisibleSatIds] = useState<string[]>(() => scenario.satellites.map((sat) => sat.id));
 
   useEffect(() => {
     const load = async () => {
@@ -73,9 +81,23 @@ export function App() {
     (output) => setOutput(output)
   );
 
+  useEffect(() => {
+    setVisibleSatIds(scenario.satellites.map((sat) => sat.id));
+  }, [scenario]);
+
   const selectedIncident = selectedIncidentId
     ? filteredIncidents.find((incident) => incident.id === selectedIncidentId)
     : null;
+
+  const mapIncidents = filteredIncidents.filter((incident) => {
+    if (incident.source === 'FIRMS') return layerToggles.firms;
+    if (incident.source === 'GDACS') return layerToggles.gdacs;
+    return true;
+  });
+
+  const toggleSatellite = (id: string) => {
+    setVisibleSatIds((prev) => (prev.includes(id) ? prev.filter((satId) => satId !== id) : [...prev, id]));
+  };
 
   return (
     <div className="min-h-screen text-slate-900">
@@ -158,14 +180,79 @@ export function App() {
                       <h2 className="text-base font-semibold">Operational Map</h2>
                       <p className="text-xs text-slate-500">Tap an incident to surface the timing window.</p>
                     </div>
-                    <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-blush-600">
-                      <span className="rounded-full border border-blush-200 bg-white px-3 py-1">FIRMS</span>
-                      <span className="rounded-full border border-blush-200 bg-white px-3 py-1">GDACS</span>
-                      <span className="rounded-full border border-blush-200 bg-white px-3 py-1">Stations</span>
-                      <span className="rounded-full border border-blush-200 bg-white px-3 py-1">Tracks</span>
+                    <div className="flex flex-wrap gap-3 text-[11px] font-semibold text-slate-500">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-blush-200 text-blush-500 focus:ring-blush-200"
+                          checked={layerToggles.firms}
+                          onChange={(event) => setLayerToggles({ ...layerToggles, firms: event.target.checked })}
+                        />
+                        FIRMS
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-blush-200 text-blush-500 focus:ring-blush-200"
+                          checked={layerToggles.gdacs}
+                          onChange={(event) => setLayerToggles({ ...layerToggles, gdacs: event.target.checked })}
+                        />
+                        GDACS
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-blush-200 text-blush-500 focus:ring-blush-200"
+                          checked={layerToggles.tracks}
+                          onChange={(event) => setLayerToggles({ ...layerToggles, tracks: event.target.checked })}
+                        />
+                        Tracks
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-blush-200 text-blush-500 focus:ring-blush-200"
+                          checked={layerToggles.footprints}
+                          onChange={(event) => setLayerToggles({ ...layerToggles, footprints: event.target.checked })}
+                        />
+                        Footprints
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-blush-200 text-blush-500 focus:ring-blush-200"
+                          checked={layerToggles.stations}
+                          onChange={(event) => setLayerToggles({ ...layerToggles, stations: event.target.checked })}
+                        />
+                        Stations
+                      </label>
                     </div>
                   </div>
-                  <MapView scenario={scenario} incidents={filteredIncidents} output={output} onIncidentSelect={setSelectedIncidentId} />
+                  <MapView
+                    scenario={scenario}
+                    incidents={mapIncidents}
+                    output={output}
+                    onIncidentSelect={setSelectedIncidentId}
+                    selectedIncidentId={selectedIncidentId}
+                    layerToggles={layerToggles}
+                    visibleSatIds={visibleSatIds}
+                  />
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Satellites</p>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      {scenario.satellites.map((sat) => (
+                        <label key={sat.id} className="flex items-center justify-between gap-2 rounded-2xl border border-blush-100 bg-white/70 px-3 py-2 text-xs text-slate-600 shadow-sm">
+                          <span className="font-semibold">{sat.name}</span>
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-blush-200 text-blush-500 focus:ring-blush-200"
+                            checked={visibleSatIds.includes(sat.id)}
+                            onChange={() => toggleSatellite(sat.id)}
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </section>
               {selectedIncident && (
