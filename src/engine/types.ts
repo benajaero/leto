@@ -85,22 +85,23 @@ export type SatelliteOutput = {
 
 export type RevisitMetrics = {
   passCount: number;
-  avgGapMinutes: number;
-  maxGapMinutes: number;
+  avgGapSeconds: number;
+  maxGapSeconds: number;
 };
 
 export type HeatmapCell = {
   lat: number;
   lon: number;
-  count: number;
+  coverageFraction: number;
 };
 
 export type IncidentMetrics = {
   incidentId: string;
-  tobsMinutes: number | null;
-  tdlMinutes: number | null;
+  tFirstObsSeconds: number | null;
+  tFirstDownlinkSeconds: number | null;
   score: number;
   servingSatellite?: string;
+  serviceabilityLabel?: string;
 };
 
 export type EngineOutput = {

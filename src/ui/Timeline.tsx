@@ -18,6 +18,8 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
 
   const incident = output.incidentMetrics.find((item) => item.incidentId === selectedIncidentId);
 
+  const formatMinutes = (seconds: number) => `${(seconds / 60).toFixed(1)} min`;
+
   return (
     <section className="rounded-3xl border border-blush-100 bg-white/85 p-6 shadow-panel backdrop-blur motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]">
       <div className="flex flex-col gap-4">
@@ -39,8 +41,11 @@ export function Timeline({ output, scenario, selectedIncidentId }: { output: Eng
             {incident ? (
               <ul className="mt-2 space-y-1 text-sm text-slate-500">
                 <li>Serving satellite: {incident.servingSatellite ?? 'Unassigned'}</li>
-                <li>Tobs: {incident.tobsMinutes === null ? 'No pass' : `${incident.tobsMinutes.toFixed(1)} min`}</li>
-                <li>Tdl: {incident.tdlMinutes === null ? 'No downlink' : `${incident.tdlMinutes.toFixed(1)} min`}</li>
+                <li>Tobs: {incident.tFirstObsSeconds === null ? 'No pass' : formatMinutes(incident.tFirstObsSeconds)}</li>
+                <li>Tdl: {incident.tFirstDownlinkSeconds === null ? 'No downlink' : formatMinutes(incident.tFirstDownlinkSeconds)}</li>
+                {incident.serviceabilityLabel && (
+                  <li className="text-blush-600">{incident.serviceabilityLabel}</li>
+                )}
               </ul>
             ) : (
               <p className="mt-2 text-sm text-slate-500">Select an incident to view timing.</p>

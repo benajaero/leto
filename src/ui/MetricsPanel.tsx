@@ -12,6 +12,16 @@ export function MetricsPanel({ output, incidents, onSelectIncident }: { output: 
     );
   }
 
+  const formatMinutes = (seconds: number) => {
+    if (!Number.isFinite(seconds)) return '-';
+    return `${(seconds / 60).toFixed(1)} min`;
+  };
+
+  const formatHours = (seconds: number) => {
+    if (!Number.isFinite(seconds)) return '-';
+    return `${(seconds / 3600).toFixed(1)} h`;
+  };
+
   const ranked = output.incidentMetrics
     .map((metric) => ({
       ...metric,
@@ -31,8 +41,8 @@ export function MetricsPanel({ output, incidents, onSelectIncident }: { output: 
           <div className="rounded-2xl border border-blush-100 bg-white/80 p-4 shadow-sm">
             <p className="text-xs font-semibold text-slate-400">Revisit passes</p>
             <p className="mt-2 text-2xl font-semibold text-slate-900">{output.revisit.passCount}</p>
-            <p className="text-xs text-slate-500">Avg gap: {output.revisit.avgGapMinutes.toFixed(1)} min</p>
-            <p className="text-xs text-slate-500">Max gap: {output.revisit.maxGapMinutes.toFixed(1)} min</p>
+            <p className="text-xs text-slate-500">Avg gap: {formatHours(output.revisit.avgGapSeconds)}</p>
+            <p className="text-xs text-slate-500">Max gap: {formatHours(output.revisit.maxGapSeconds)}</p>
           </div>
           <div className="rounded-2xl border border-blush-100 bg-white/80 p-4 shadow-sm">
             <p className="text-xs font-semibold text-slate-400">Coverage cells</p>
@@ -60,8 +70,12 @@ export function MetricsPanel({ output, incidents, onSelectIncident }: { output: 
                   <tr className="cursor-pointer hover:bg-blush-50/60" key={item.incidentId} onClick={() => onSelectIncident(item.incidentId)}>
                     <td className="px-3 py-2">{item.incident?.label ?? item.incidentId}</td>
                     <td className="px-3 py-2">{item.score}</td>
-                    <td className="px-3 py-2">{item.tobsMinutes === null ? '-' : item.tobsMinutes.toFixed(1)} min</td>
-                    <td className="px-3 py-2">{item.tdlMinutes === null ? '-' : item.tdlMinutes.toFixed(1)} min</td>
+                    <td className="px-3 py-2">
+                      {item.tFirstObsSeconds === null ? '-' : formatMinutes(item.tFirstObsSeconds)}
+                    </td>
+                    <td className="px-3 py-2">
+                      {item.tFirstDownlinkSeconds === null ? '-' : formatMinutes(item.tFirstDownlinkSeconds)}
+                    </td>
                   </tr>
                 ))}
               </tbody>

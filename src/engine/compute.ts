@@ -58,17 +58,17 @@ function computeAccessWindows(flags: boolean[], times: Date[], elevations?: numb
 
 function revisitFromWindows(windows: AccessWindow[]): RevisitMetrics {
   if (windows.length === 0) {
-    return { passCount: 0, avgGapMinutes: 0, maxGapMinutes: 0 };
+    return { passCount: 0, avgGapSeconds: 0, maxGapSeconds: 0 };
   }
-  const gaps: number[] = [];
+  const gapsSeconds: number[] = [];
   for (let i = 1; i < windows.length; i += 1) {
     const prevEnd = new Date(windows[i - 1].endUtc).getTime();
     const nextStart = new Date(windows[i].startUtc).getTime();
-    gaps.push((nextStart - prevEnd) / 60000);
+    gapsSeconds.push((nextStart - prevEnd) / 1000);
   }
-  const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
-  const max = gaps.length ? Math.max(...gaps) : 0;
-  return { passCount: windows.length, avgGapMinutes: avg, maxGapMinutes: max };
+  const avg = gapsSeconds.length ? gapsSeconds.reduce((a, b) => a + b, 0) / gapsSeconds.length : 0;
+  const max = gapsSeconds.length ? Math.max(...gapsSeconds) : 0;
+  return { passCount: windows.length, avgGapSeconds: avg, maxGapSeconds: max };
 }
 
 function aoiIntersects(aoi: AOIRect, subpoint: { lat: number; lon: number }, footprintKm: number): boolean {
@@ -77,18 +77,25 @@ function aoiIntersects(aoi: AOIRect, subpoint: { lat: number; lon: number }, foo
   return distance <= footprintKm;
 }
 
-function scoreServiceability(tobsMinutes: number | null, tdlMinutes: number | null, maxGapMinutes: number): number {
-  if (tobsMinutes === null) {
-    return 0;
+function scoreServiceability(tobsSeconds: number | null, tdlSeconds: number | null, maxGapSeconds: number): { score: number; label?: string } {
+  if (tobsSeconds === null || tdlSeconds === null) {
+    return { score: 0, label: 'Unserviceable in horizon' };
   }
-  const tobsScore = Math.max(0, 50 - tobsMinutes * 0.8);
-  const tdlScore = tdlMinutes === null ? 0 : Math.max(0, 35 - tdlMinutes * 0.5);
-  const revisitPenalty = Math.min(15, maxGapMinutes * 0.05);
-  const score = Math.max(0, Math.min(100, tobsScore + tdlScore + (15 - revisitPenalty)));
-  return Math.round(score);
+
+  const tobsRef = 6 * 3600;
+  const tdlRef = 8 * 3600;
+  const gmaxRef = 12 * 3600;
+
+  const nObs = Math.min(1, Math.max(0, tobsSeconds / tobsRef));
+  const nDl = Math.min(1, Math.max(0, tdlSeconds / tdlRef));
+  const nGap = Math.min(1, Math.max(0, maxGapSeconds / gmaxRef));
+
+  const raw = 100 * (1 - (0.45 * nObs + 0.4 * nDl + 0.15 * nGap));
+  const score = Math.max(0, Math.min(100, Math.round(raw)));
+  return { score };
 }
 
-function buildHeatmap(aoi: AOIRect, tracks: TrackPoint[]): { lat: number; lon: number; count: number }[] {
+function buildHeatmap(aoi: AOIRect, tracks: TrackPoint[], totalSamples: number): { lat: number; lon: number; coverageFraction: number }[] {
   const cells: { lat: number; lon: number; count: number }[] = [];
   for (let lat = aoi.latMin; lat <= aoi.latMax; lat += HEATMAP_RESOLUTION_DEG) {
     for (let lon = aoi.lonMin; lon <= aoi.lonMax; lon += HEATMAP_RESOLUTION_DEG) {
@@ -103,7 +110,11 @@ function buildHeatmap(aoi: AOIRect, tracks: TrackPoint[]): { lat: number; lon: n
       }
     }
   }
-  return cells;
+  return cells.map((cell) => ({
+    lat: cell.lat,
+    lon: cell.lon,
+    coverageFraction: totalSamples > 0 ? cell.count / totalSamples : 0
+  }));
 }
 
 export function computeScenario(
@@ -182,7 +193,8 @@ export function computeScenario(
     satellitesOutput.flatMap((sat) => sat.aoiAccess)
   );
 
-  const heatmap = buildHeatmap(scenario.aoi, allTracks);
+  const totalSamples = scenario.satellites.length * times.length;
+  const heatmap = buildHeatmap(scenario.aoi, allTracks, totalSamples);
 
   const incidentMetrics: IncidentMetrics[] = incidents.map((incident) => {
     let bestTobs: number | null = null;
@@ -196,12 +208,12 @@ export function computeScenario(
       });
       if (obs) {
         const obsTime = new Date(obs.timeUtc).getTime();
-        const tobs = (obsTime - start.getTime()) / 60000;
+        const tobs = (obsTime - start.getTime()) / 1000;
         let tdl: number | null = null;
         const contactWindows = Object.values(satOut.stationContacts).flat();
         const contact = contactWindows.find((window) => new Date(window.startUtc).getTime() >= obsTime);
         if (contact) {
-          tdl = (new Date(contact.startUtc).getTime() - start.getTime()) / 60000;
+          tdl = (new Date(contact.startUtc).getTime() - start.getTime()) / 1000;
         }
         if (bestTobs === null || tobs < bestTobs) {
           bestTobs = tobs;
@@ -211,13 +223,14 @@ export function computeScenario(
       }
     });
 
-    const score = scoreServiceability(bestTobs, bestTdl, revisit.maxGapMinutes);
+    const { score, label } = scoreServiceability(bestTobs, bestTdl, revisit.maxGapSeconds);
     return {
       incidentId: incident.id,
-      tobsMinutes: bestTobs,
-      tdlMinutes: bestTdl,
+      tFirstObsSeconds: bestTobs,
+      tFirstDownlinkSeconds: bestTdl,
       score,
-      servingSatellite
+      servingSatellite,
+      serviceabilityLabel: label
     };
   });
 
