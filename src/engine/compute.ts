@@ -23,32 +23,44 @@ function generateTimes(start: Date, horizonHours: number, timestepSec: number): 
   return times;
 }
 
+function midpointUtc(a: Date, b: Date): string {
+  return new Date(a.getTime() + (b.getTime() - a.getTime()) / 2).toISOString();
+}
+
 function computeAccessWindows(flags: boolean[], times: Date[], elevations?: number[]): AccessWindow[] {
   const windows: AccessWindow[] = [];
   let openIndex: number | null = null;
   let maxEl = -90;
+  let startUtc: string | null = null;
   for (let i = 0; i < flags.length; i += 1) {
     if (flags[i]) {
       if (openIndex === null) {
         openIndex = i;
+        if (i > 0) {
+          startUtc = midpointUtc(times[i - 1], times[i]);
+        } else {
+          startUtc = times[i].toISOString();
+        }
         maxEl = elevations ? elevations[i] : -90;
       } else if (elevations) {
         maxEl = Math.max(maxEl, elevations[i]);
       }
     }
     if (!flags[i] && openIndex !== null) {
+      const endUtc = midpointUtc(times[i - 1], times[i]);
       windows.push({
-        startUtc: times[openIndex].toISOString(),
-        endUtc: times[i - 1].toISOString(),
+        startUtc: startUtc ?? times[openIndex].toISOString(),
+        endUtc,
         maxElevationDeg: elevations ? maxEl : undefined
       });
       openIndex = null;
       maxEl = -90;
+      startUtc = null;
     }
   }
   if (openIndex !== null) {
     windows.push({
-      startUtc: times[openIndex].toISOString(),
+      startUtc: startUtc ?? times[openIndex].toISOString(),
       endUtc: times[times.length - 1].toISOString(),
       maxElevationDeg: elevations ? maxEl : undefined
     });
@@ -195,7 +207,9 @@ export function computeScenario(
   );
 
   const totalSamples = scenario.satellites.length * times.length;
-  const heatmap = buildHeatmap(scenario.aoi, allTracks, totalSamples);
+  const heatmapValues = buildHeatmap(scenario.aoi, allTracks, totalSamples);
+  const avgLat = (scenario.aoi.latMin + scenario.aoi.latMax) / 2;
+  const cellSizeKm = HEATMAP_RESOLUTION_DEG * 111.32 * Math.cos((avgLat * Math.PI) / 180);
 
   const incidentMetrics: IncidentMetrics[] = incidents.map((incident) => {
     let bestTobs: number | null = null;
@@ -240,7 +254,11 @@ export function computeScenario(
     generatedUtc: new Date().toISOString(),
     satellites: satellitesOutput,
     revisit,
-    heatmap,
+    heatmapGrid: {
+      bounds: scenario.aoi,
+      cellSizeKm,
+      values: heatmapValues
+    },
     incidentMetrics,
     warnings
   };

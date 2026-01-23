@@ -65,11 +65,13 @@ export type Incident = {
   id: string;
   source: 'FIRMS' | 'GDACS';
   type: string;
+  hazardType?: string;
   severity?: number;
   confidence?: number;
   lat: number;
   lon: number;
   observedUtc: string;
+  ingestedUtc?: string;
   label: string;
 };
 
@@ -121,7 +123,11 @@ export type EngineOutput = {
   generatedUtc: string;
   satellites: SatelliteOutput[];
   revisit: RevisitMetrics;
-  heatmap: HeatmapCell[];
+  heatmapGrid: {
+    bounds: AOIRect;
+    cellSizeKm: number;
+    values: HeatmapCell[];
+  };
   incidentMetrics: IncidentMetrics[];
   warnings: string[];
 };

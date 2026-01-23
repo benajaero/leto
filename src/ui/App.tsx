@@ -311,7 +311,10 @@ export function App() {
                 <div className="rounded-2xl border border-blush-200 bg-blush-50 p-3 text-sm shadow-panel animate-fade-up">
                   <div className="flex w-full flex-wrap items-center justify-between gap-2">
                     <strong className="font-semibold">{selectedIncident.label}</strong>
-                    <span className="text-slate-500">{selectedIncident.source} • {selectedIncident.observedUtc}</span>
+                    <span className="text-slate-500">
+                      {selectedIncident.source} • Observed {selectedIncident.observedUtc}
+                      {selectedIncident.ingestedUtc ? ` • Ingested ${selectedIncident.ingestedUtc}` : ''}
+                    </span>
                   </div>
                 </div>
               )}

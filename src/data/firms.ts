@@ -4,7 +4,7 @@ import { loadCache, saveCache } from './cache';
 const CACHE_KEY = 'leto_firms_cache';
 const SAMPLE_URL = '/sample/firms.csv';
 
-function parseCsv(text: string): Incident[] {
+function parseCsv(text: string, ingestedUtc: string): Incident[] {
   const lines = text.trim().split(/\r?\n/);
   const header = lines.shift();
   if (!header) return [];
@@ -23,10 +23,12 @@ function parseCsv(text: string): Incident[] {
         id: `firms-${i}-${lat}-${lon}`,
         source: 'FIRMS',
         type: 'Fire',
+        hazardType: 'fire',
         confidence,
         lat,
         lon,
         observedUtc,
+        ingestedUtc,
         label: `Fire ${confidence}`
       } as Incident;
     })
@@ -36,7 +38,8 @@ function parseCsv(text: string): Incident[] {
 export async function fetchFirms(bounds?: { latMin: number; latMax: number; lonMin: number; lonMax: number }): Promise<{ incidents: Incident[]; fetchedUtc: string; fromCache: boolean; sourceUrl: string }>{
   const cache = loadCache<Incident[]>(CACHE_KEY);
   if (cache) {
-    return { incidents: cache.data, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL };
+    const incidents = cache.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? cache.fetchedUtc }));
+    return { incidents, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL };
   }
 
   const apiKey = import.meta.env.VITE_FIRMS_API_KEY as string | undefined;
@@ -52,7 +55,9 @@ export async function fetchFirms(bounds?: { latMin: number; latMax: number; lonM
     return { incidents: cached, fetchedUtc: cache?.fetchedUtc ?? new Date().toISOString(), fromCache: true, sourceUrl: url };
   }
   const text = await response.text();
-  const incidents = parseCsv(text);
+  const nowUtc = new Date().toISOString();
+  const incidents = parseCsv(text, nowUtc);
   const saved = saveCache(CACHE_KEY, incidents);
-  return { incidents, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url };
+  const withIngested = incidents.map((incident) => ({ ...incident, ingestedUtc: saved.fetchedUtc }));
+  return { incidents: withIngested, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url };
 }

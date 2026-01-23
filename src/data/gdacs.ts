@@ -5,7 +5,7 @@ const CACHE_KEY = 'leto_gdacs_cache';
 const SAMPLE_URL = '/sample/gdacs.xml';
 const LIVE_URL = 'https://www.gdacs.org/xml/rss.xml';
 
-function parseXml(xmlText: string): Incident[] {
+function parseXml(xmlText: string, ingestedUtc: string): Incident[] {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xmlText, 'text/xml');
   const items = Array.from(doc.getElementsByTagName('item'));
@@ -24,10 +24,12 @@ function parseXml(xmlText: string): Incident[] {
         id: guid,
         source: 'GDACS',
         type: hazard,
+        hazardType: hazard.toLowerCase(),
         severity: Number(severityText),
         lat,
         lon,
         observedUtc: new Date(pubDate).toISOString(),
+        ingestedUtc,
         label: title
       } as Incident;
     })
@@ -37,7 +39,8 @@ function parseXml(xmlText: string): Incident[] {
 export async function fetchGdacs(): Promise<{ incidents: Incident[]; fetchedUtc: string; fromCache: boolean; sourceUrl: string }>{
   const cache = loadCache<Incident[]>(CACHE_KEY);
   if (cache) {
-    return { incidents: cache.data, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL };
+    const incidents = cache.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? cache.fetchedUtc }));
+    return { incidents, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL };
   }
   let url = LIVE_URL;
   try {
@@ -46,14 +49,18 @@ export async function fetchGdacs(): Promise<{ incidents: Incident[]; fetchedUtc:
       throw new Error('GDACS fetch failed');
     }
     const xmlText = await response.text();
-    const incidents = parseXml(xmlText);
+    const nowUtc = new Date().toISOString();
+    const incidents = parseXml(xmlText, nowUtc);
     const saved = saveCache(CACHE_KEY, incidents);
-    return { incidents, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url };
+    const withIngested = incidents.map((incident) => ({ ...incident, ingestedUtc: saved.fetchedUtc }));
+    return { incidents: withIngested, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url };
   } catch {
     const response = await fetch(SAMPLE_URL);
     const xmlText = await response.text();
-    const incidents = parseXml(xmlText);
+    const nowUtc = new Date().toISOString();
+    const incidents = parseXml(xmlText, nowUtc);
     const saved = saveCache(CACHE_KEY, incidents);
-    return { incidents, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: SAMPLE_URL };
+    const withIngested = incidents.map((incident) => ({ ...incident, ingestedUtc: saved.fetchedUtc }));
+    return { incidents: withIngested, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: SAMPLE_URL };
   }
 }
