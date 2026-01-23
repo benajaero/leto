@@ -24,13 +24,13 @@ export function App() {
   const setDataSources = useStore((state) => state.setDataSources);
 
   const [filters, setFilters] = useState({ hours: 48, minConfidence: 0, minSeverity: 0 });
-  const [layerToggles, setLayerToggles] = useState({
-    firms: true,
-    gdacs: true,
-    tracks: true,
-    footprints: true,
-    stations: true
-  });
+  const [layerToggles, setLayerToggles] = useState(() => ({
+    firms: scenario.display?.layerToggles?.firms ?? true,
+    gdacs: scenario.display?.layerToggles?.gdacs ?? true,
+    tracks: scenario.display?.showTracks ?? true,
+    footprints: scenario.display?.showFootprints ?? true,
+    stations: scenario.display?.showStations ?? true
+  }));
   const [visibleSatIds, setVisibleSatIds] = useState<string[]>(() => scenario.satellites.map((sat) => sat.id));
 
   useEffect(() => {
@@ -83,6 +83,13 @@ export function App() {
 
   useEffect(() => {
     setVisibleSatIds(scenario.satellites.map((sat) => sat.id));
+    setLayerToggles({
+      firms: scenario.display?.layerToggles?.firms ?? true,
+      gdacs: scenario.display?.layerToggles?.gdacs ?? true,
+      tracks: scenario.display?.showTracks ?? true,
+      footprints: scenario.display?.showFootprints ?? true,
+      stations: scenario.display?.showStations ?? true
+    });
   }, [scenario]);
 
   const selectedIncident = selectedIncidentId
@@ -97,6 +104,51 @@ export function App() {
 
   const toggleSatellite = (id: string) => {
     setVisibleSatIds((prev) => (prev.includes(id) ? prev.filter((satId) => satId !== id) : [...prev, id]));
+  };
+
+  const exportScenario = () => {
+    const payload = {
+      ...scenario,
+      display: {
+        showTracks: layerToggles.tracks,
+        showFootprints: layerToggles.footprints,
+        showStations: layerToggles.stations,
+        layerToggles: {
+          firms: layerToggles.firms,
+          gdacs: layerToggles.gdacs
+        }
+      }
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `leto-scenario-${scenario.id}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importScenario = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result as string);
+        if (!parsed || typeof parsed !== 'object') return;
+        setScenario(parsed);
+        if (parsed.display) {
+          setLayerToggles({
+            firms: parsed.display.layerToggles?.firms ?? true,
+            gdacs: parsed.display.layerToggles?.gdacs ?? true,
+            tracks: parsed.display.showTracks ?? true,
+            footprints: parsed.display.showFootprints ?? true,
+            stations: parsed.display.showStations ?? true
+          });
+        }
+      } catch (error) {
+        console.error('Invalid scenario JSON', error);
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -169,7 +221,7 @@ export function App() {
 
           <main className="grid grid-cols-1 gap-4 xl:grid-cols-[320px_minmax(0,1fr)_360px]">
             <div className="order-2 flex flex-col gap-4 xl:order-1">
-              <ScenarioEditor />
+              <ScenarioEditor onExportScenario={exportScenario} onImportScenario={importScenario} />
               <DataPanel />
             </div>
             <div className="order-1 flex flex-col gap-3 xl:order-2">

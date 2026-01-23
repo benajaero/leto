@@ -47,6 +47,16 @@ export type Scenario = {
   aoi: AOIRect;
   satellites: SatelliteDef[];
   stations: GroundStation[];
+  display?: {
+    showTracks: boolean;
+    showFootprints: boolean;
+    showStations: boolean;
+    layerToggles: {
+      firms: boolean;
+      gdacs: boolean;
+      dea?: boolean;
+    };
+  };
 };
 
 export type Incident = {

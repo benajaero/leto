@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useStore } from './store';
 import type { SatelliteCircular, SatelliteTle, GroundStation, Scenario } from '../engine/types';
 import { scenarios } from '../data/scenarios';
@@ -7,7 +7,13 @@ function updateScenario(scenario: Scenario, update: Partial<Scenario>): Scenario
   return { ...scenario, ...update };
 }
 
-export function ScenarioEditor() {
+export function ScenarioEditor({
+  onExportScenario,
+  onImportScenario
+}: {
+  onExportScenario?: () => void;
+  onImportScenario?: (file: File) => void;
+}) {
   const scenario = useStore((state) => state.scenario);
   const setScenario = useStore((state) => state.setScenario);
 
@@ -15,6 +21,7 @@ export function ScenarioEditor() {
   const [satName, setSatName] = useState('');
   const [orbitInputs, setOrbitInputs] = useState({ altitudeKm: 550, inclinationDeg: 97, raanDeg: 0, meanAnomalyDeg: 0 });
   const [stationInputs, setStationInputs] = useState({ name: '', lat: -35, lon: 149, maskDeg: 10 });
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const scenarioOptions = useMemo(() => scenarios, []);
 
@@ -296,6 +303,44 @@ export function ScenarioEditor() {
                 <li key={station.id}>{station.name} ({station.lat.toFixed(1)}, {station.lon.toFixed(1)})</li>
               ))}
             </ul>
+          </div>
+        </div>
+
+        <div className="h-px w-full bg-blush-100" />
+
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-semibold">Scenario JSON</p>
+            <p className="text-xs text-slate-500">Export or import scenario settings for reuse.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              className="rounded-full bg-blush-500 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-blush-600 transition"
+              onClick={onExportScenario}
+            >
+              Export Scenario
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-blush-200 bg-white px-4 py-2 text-xs font-semibold text-blush-600 shadow-sm hover:border-blush-300 transition"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Import Scenario
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file && onImportScenario) {
+                  onImportScenario(file);
+                }
+                event.currentTarget.value = '';
+              }}
+            />
           </div>
         </div>
       </div>
