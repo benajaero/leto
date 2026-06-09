@@ -82,8 +82,8 @@ describe('Serviceability scoring', () => {
       stations: [{ id: 'station', name: 'Equator', lat: 0, lon: 105, maskDeg: 5 }]
     };
     const incidents = [
-      { id: 'near', source: 'FIRMS', type: 'Fire', lat: 0, lon: 105, observedUtc: scenario.startTimeUtc, label: 'Near' },
-      { id: 'far', source: 'FIRMS', type: 'Fire', lat: 4, lon: 105, observedUtc: scenario.startTimeUtc, label: 'Far' }
+      { id: 'near', source: 'FIRMS' as const, type: 'Fire', lat: 0, lon: 105, observedUtc: scenario.startTimeUtc, label: 'Near' },
+      { id: 'far', source: 'FIRMS' as const, type: 'Fire', lat: 4, lon: 105, observedUtc: scenario.startTimeUtc, label: 'Far' }
     ];
     const output = computeScenario(scenario, incidents);
     const nearScore = output.incidentMetrics.find((metric) => metric.incidentId === 'near')!.score;

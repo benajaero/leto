@@ -17,11 +17,14 @@ export function App() {
   const progress = useStore((state) => state.progress);
   const selectedIncidentId = useStore((state) => state.selectedIncidentId);
   const dataSources = useStore((state) => state.dataSources);
+  const engineError = useStore((state) => state.engineError);
   const setIncidents = useStore((state) => state.setIncidents);
   const setOutput = useStore((state) => state.setOutput);
   const setProgress = useStore((state) => state.setProgress);
   const setSelectedIncidentId = useStore((state) => state.setSelectedIncidentId);
   const setDataSources = useStore((state) => state.setDataSources);
+  const setEngineError = useStore((state) => state.setEngineError);
+  const setScenario = useStore((state) => state.setScenario);
 
   const defaultFilters = { hours: 48, minConfidence: 0, minSeverity: 0 };
   const [filters, setFilters] = useState(defaultFilters);
@@ -44,14 +47,16 @@ export function App() {
           fetchedUtc: firms.fetchedUtc,
           fromCache: firms.fromCache,
           disclaimer: 'Near real-time; latency varies by product and region.',
-          sourceUrl: firms.sourceUrl
+          sourceUrl: firms.sourceUrl,
+          offline: firms.offline
         },
         {
           name: 'GDACS',
           fetchedUtc: gdacs.fetchedUtc,
           fromCache: gdacs.fromCache,
           disclaimer: 'Automated alerts; verify event details with official sources.',
-          sourceUrl: gdacs.sourceUrl
+          sourceUrl: gdacs.sourceUrl,
+          offline: gdacs.offline
         }
       ]);
       setIncidents([...firms.incidents, ...gdacs.incidents]);
@@ -79,7 +84,8 @@ export function App() {
     scenario,
     filteredIncidents,
     (value) => setProgress(value),
-    (output) => setOutput(output)
+    (output) => setOutput(output),
+    (error) => setEngineError(error)
   );
 
   useEffect(() => {
@@ -234,7 +240,7 @@ export function App() {
             </div>
           </header>
 
-          <StatusBar progress={progress} dataSources={dataSources} scenario={scenario} />
+          <StatusBar progress={progress} dataSources={dataSources} scenario={scenario} engineError={engineError} onClearError={() => setEngineError(null)} />
 
           <main className="grid grid-cols-1 gap-4 xl:grid-cols-[320px_minmax(0,1fr)_360px]">
             <div className="order-2 flex flex-col gap-4 xl:order-1">

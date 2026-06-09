@@ -2,8 +2,28 @@ import type { Scenario } from '../engine/types';
 
 export const scenarios: Scenario[] = [
   {
+    id: 'au-bushfire-quick',
+    name: 'AU Bushfire — Quick Start',
+    startTimeUtc: new Date(Date.UTC(2026, 0, 10, 0, 0, 0)).toISOString(),
+    horizonHours: 12,
+    timestepSec: 60,
+    aoi: { latMin: -38, latMax: -24, lonMin: 140, lonMax: 154 },
+    satellites: [
+      {
+        id: 'sat-1',
+        name: 'Sentinel-2A',
+        type: 'tle',
+        line1: '1 40697U 15028A   26009.52083333  .00000678  00000-0  36758-4 0  9991',
+        line2: '2 40697  98.5694  22.1575 0001221  97.7023 262.4312 14.30887254479401'
+      }
+    ],
+    stations: [
+      { id: 'station-1', name: 'Canberra', lat: -35.3, lon: 149.1, maskDeg: 10 }
+    ]
+  },
+  {
     id: 'au-bushfire',
-    name: 'AU Bushfire',
+    name: 'AU Bushfire — Full',
     startTimeUtc: new Date(Date.UTC(2026, 0, 10, 0, 0, 0)).toISOString(),
     horizonHours: 12,
     timestepSec: 60,

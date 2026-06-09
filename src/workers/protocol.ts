@@ -11,9 +11,15 @@ export type EngineProgress = {
   value: number;
 };
 
+export type EngineError = {
+  type: 'error';
+  error: string;
+  details?: string;
+};
+
 export type EngineResponse = {
   type: 'result';
   output: EngineOutput;
 };
 
-export type EngineMessage = EngineRequest | EngineProgress | EngineResponse;
+export type EngineMessage = EngineRequest | EngineProgress | EngineResponse | EngineError;

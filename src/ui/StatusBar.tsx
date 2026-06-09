@@ -7,8 +7,21 @@ function hoursSince(iso: string): number {
   return diff / 3600000;
 }
 
-export function StatusBar({ progress, dataSources, scenario }: { progress: number; dataSources: DataSourceStatus[]; scenario: Scenario }) {
+export function StatusBar({
+  progress,
+  dataSources,
+  scenario,
+  engineError,
+  onClearError
+}: {
+  progress: number;
+  dataSources: DataSourceStatus[];
+  scenario: Scenario;
+  engineError: string | null;
+  onClearError: () => void;
+}) {
   const staleFeeds = dataSources.filter((source) => hoursSince(source.fetchedUtc) > 24);
+  const offlineFeeds = dataSources.filter((source) => source.offline);
   const tleWarnings = scenario.satellites
     .filter((sat) => sat.type === 'tle')
     .map((sat) => {
@@ -31,20 +44,44 @@ export function StatusBar({ progress, dataSources, scenario }: { progress: numbe
             Engine progress: {progress}%
           </div>
         </div>
+
+        {engineError && (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <strong className="font-semibold">Engine error:</strong>{' '}
+                <span className="text-rose-600">{engineError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={onClearError}
+                className="rounded-full border border-rose-200 bg-white px-3 py-1 text-[11px] font-semibold text-rose-600 shadow-sm hover:border-rose-300 transition"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-blush-600">
+          {offlineFeeds.length > 0 && (
+            <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-amber-700">
+              Offline: {offlineFeeds.map((source) => source.name).join(', ')}
+            </span>
+          )}
           {staleFeeds.length > 0 && (
             <span className="rounded-full border border-blush-200 bg-blush-50 px-3 py-1">Stale feeds: {staleFeeds.map((source) => source.name).join(', ')}</span>
           )}
           {tleWarnings.length > 0 && (
             <span className="rounded-full border border-blush-200 bg-blush-50 px-3 py-1">Stale TLEs: {tleWarnings.map((item) => `${item.name} (${item.hours.toFixed(0)}h)`).join(', ')}</span>
           )}
-          {dataSources.some((source) => source.fromCache) && (
-            <span className="rounded-full border border-blush-200 bg-blush-50 px-3 py-1">Offline/cache mode active</span>
+          {dataSources.some((source) => source.fromCache) && offlineFeeds.length === 0 && (
+            <span className="rounded-full border border-blush-200 bg-blush-50 px-3 py-1">Cache mode active</span>
           )}
           {dataSources.length === 0 && (
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-400">Awaiting data sources</span>
           )}
-          {dataSources.length > 0 && staleFeeds.length === 0 && tleWarnings.length === 0 && !dataSources.some((source) => source.fromCache) && (
+          {dataSources.length > 0 && staleFeeds.length === 0 && tleWarnings.length === 0 && !dataSources.some((source) => source.fromCache) && offlineFeeds.length === 0 && (
             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">All feeds fresh</span>
           )}
         </div>

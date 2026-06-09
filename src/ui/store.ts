@@ -8,6 +8,7 @@ export type DataSourceStatus = {
   fromCache: boolean;
   disclaimer: string;
   sourceUrl: string;
+  offline: boolean;
 };
 
 type StoreState = {
@@ -17,12 +18,14 @@ type StoreState = {
   progress: number;
   selectedIncidentId: string | null;
   dataSources: DataSourceStatus[];
+  engineError: string | null;
   setScenario: (scenario: Scenario) => void;
   setIncidents: (incidents: Incident[]) => void;
   setOutput: (output: EngineOutput | null) => void;
   setProgress: (progress: number) => void;
   setSelectedIncidentId: (id: string | null) => void;
   setDataSources: (sources: DataSourceStatus[]) => void;
+  setEngineError: (error: string | null) => void;
 };
 
 export const useStore = create<StoreState>((set) => ({
@@ -32,10 +35,12 @@ export const useStore = create<StoreState>((set) => ({
   progress: 0,
   selectedIncidentId: null,
   dataSources: [],
+  engineError: null,
   setScenario: (scenario) => set({ scenario }),
   setIncidents: (incidents) => set({ incidents }),
   setOutput: (output) => set({ output }),
   setProgress: (progress) => set({ progress }),
   setSelectedIncidentId: (selectedIncidentId) => set({ selectedIncidentId }),
-  setDataSources: (dataSources) => set({ dataSources })
+  setDataSources: (dataSources) => set({ dataSources }),
+  setEngineError: (engineError) => set({ engineError })
 }));

@@ -1,5 +1,5 @@
 import type { Incident } from '../engine/types';
-import { loadCache, saveCache } from './cache';
+import { loadCache, loadStaleCache, saveCache, isOffline } from './cache';
 
 const CACHE_KEY = 'leto_firms_cache';
 const SAMPLE_URL = '/sample/firms.csv';
@@ -35,29 +35,70 @@ function parseCsv(text: string, ingestedUtc: string): Incident[] {
     .filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lon));
 }
 
-export async function fetchFirms(bounds?: { latMin: number; latMax: number; lonMin: number; lonMax: number }): Promise<{ incidents: Incident[]; fetchedUtc: string; fromCache: boolean; sourceUrl: string }>{
-  const cache = loadCache<Incident[]>(CACHE_KEY);
-  if (cache) {
-    const incidents = cache.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? cache.fetchedUtc }));
-    return { incidents, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL };
+export async function fetchFirms(
+  bounds?: { latMin: number; latMax: number; lonMin: number; lonMax: number }
+): Promise<{ incidents: Incident[]; fetchedUtc: string; fromCache: boolean; sourceUrl: string; offline: boolean }> {
+  const offline = isOffline();
+  const cache = loadCache<Incident[]>(CACHE_KEY, 30);
+
+  if (offline) {
+    const stale = cache ?? loadStaleCache<Incident[]>(CACHE_KEY);
+    const incidents = stale
+      ? stale.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? stale.fetchedUtc }))
+      : [];
+    return {
+      incidents,
+      fetchedUtc: stale?.fetchedUtc ?? new Date().toISOString(),
+      fromCache: true,
+      sourceUrl: SAMPLE_URL,
+      offline: true
+    };
   }
 
-  const apiKey = import.meta.env.VITE_FIRMS_API_KEY as string | undefined;
+  if (cache) {
+    const incidents = cache.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? cache.fetchedUtc }));
+    return { incidents, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL, offline: false };
+  }
+
+  const apiKey = (import.meta as any).env?.VITE_FIRMS_API_KEY as string | undefined;
   let url = SAMPLE_URL;
   if (apiKey && bounds) {
     const { latMin, latMax, lonMin, lonMax } = bounds;
     url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/VIIRS_SNPP_NRT/${lonMin},${latMin},${lonMax},${latMax}/1`;
   }
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    const cached = cache ? cache.data : [];
-    return { incidents: cached, fetchedUtc: cache?.fetchedUtc ?? new Date().toISOString(), fromCache: true, sourceUrl: url };
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      const stale = loadStaleCache<Incident[]>(CACHE_KEY);
+      const incidents = stale
+        ? stale.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? stale.fetchedUtc }))
+        : [];
+      return {
+        incidents,
+        fetchedUtc: stale?.fetchedUtc ?? new Date().toISOString(),
+        fromCache: true,
+        sourceUrl: url,
+        offline: false
+      };
+    }
+    const text = await response.text();
+    const nowUtc = new Date().toISOString();
+    const incidents = parseCsv(text, nowUtc);
+    const saved = saveCache(CACHE_KEY, incidents, 30);
+    const withIngested = incidents.map((incident) => ({ ...incident, ingestedUtc: saved.fetchedUtc }));
+    return { incidents: withIngested, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url, offline: false };
+  } catch {
+    const stale = loadStaleCache<Incident[]>(CACHE_KEY);
+    const incidents = stale
+      ? stale.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? stale.fetchedUtc }))
+      : [];
+    return {
+      incidents,
+      fetchedUtc: stale?.fetchedUtc ?? new Date().toISOString(),
+      fromCache: true,
+      sourceUrl: url,
+      offline: false
+    };
   }
-  const text = await response.text();
-  const nowUtc = new Date().toISOString();
-  const incidents = parseCsv(text, nowUtc);
-  const saved = saveCache(CACHE_KEY, incidents);
-  const withIngested = incidents.map((incident) => ({ ...incident, ingestedUtc: saved.fetchedUtc }));
-  return { incidents: withIngested, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url };
 }
