@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { computeScenario } from '../src/engine/compute';
-import type { Scenario } from '../src/engine/types';
+import { computeScenario } from '../lib/engine/compute';
+import type { Scenario } from '../lib/engine/types';
 
 describe('Engine performance benchmark', () => {
   const baseScenario: Omit<Scenario, 'startTimeUtc'> = {

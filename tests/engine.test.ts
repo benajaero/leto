@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { parseTleSatrec, propagateTle } from '../src/engine/orbit';
-import { footprintRadiusKm } from '../src/engine/geometry';
-import { computeScenario } from '../src/engine/compute';
-import type { Scenario } from '../src/engine/types';
+import { parseTleSatrec, propagateTle } from '../lib/engine/orbit';
+import { footprintRadiusKm } from '../lib/engine/geometry';
+import { computeScenario } from '../lib/engine/compute';
+import type { Scenario } from '../lib/engine/types';
 
 describe('TLE propagation', () => {
   it('propagates without NaNs and position changes', () => {
