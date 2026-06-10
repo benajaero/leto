@@ -20,6 +20,7 @@ type StoreState = {
   dataSources: DataSourceStatus[];
   engineError: string | null;
   viewMode: 'command' | 'explore';
+  mobileView: 'list' | 'map' | 'detail';
   setScenario: (scenario: Scenario) => void;
   setIncidents: (incidents: Incident[]) => void;
   setOutput: (output: EngineOutput | null) => void;
@@ -28,6 +29,7 @@ type StoreState = {
   setDataSources: (sources: DataSourceStatus[]) => void;
   setEngineError: (error: string | null) => void;
   setViewMode: (mode: 'command' | 'explore') => void;
+  setMobileView: (mode: 'list' | 'map' | 'detail') => void;
 };
 
 export const useStore = create<StoreState>((set) => ({
@@ -39,6 +41,7 @@ export const useStore = create<StoreState>((set) => ({
   dataSources: [],
   engineError: null,
   viewMode: 'command',
+  mobileView: 'list',
   setScenario: (scenario) => set({ scenario }),
   setIncidents: (incidents) => set({ incidents }),
   setOutput: (output) => set({ output }),
@@ -46,5 +49,6 @@ export const useStore = create<StoreState>((set) => ({
   setSelectedIncidentId: (selectedIncidentId) => set({ selectedIncidentId }),
   setDataSources: (dataSources) => set({ dataSources }),
   setEngineError: (engineError) => set({ engineError }),
-  setViewMode: (viewMode) => set({ viewMode })
+  setViewMode: (viewMode) => set({ viewMode }),
+  setMobileView: (mobileView) => set({ mobileView })
 }));

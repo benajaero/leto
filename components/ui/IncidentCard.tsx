@@ -37,11 +37,11 @@ export function IncidentCard({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left rounded border bg-aerospace-800/50 transition-all duration-200 ${
+      className={`w-full text-left rounded border bg-aerospace-800/50 transition-all duration-200 min-h-[44px] ${
         selected
           ? 'border-cyan-400/50 bg-cyan-500/5 shadow-glow-cyan'
           : 'border-aerospace-700 hover:border-aerospace-600 hover:bg-aerospace-750'
-      } ${typeBorder(incident.type)} border-l-2`}
+      } ${typeBorder(incident.type)} border-l-2 active:scale-[0.98]`}
     >
       <div className="flex items-start gap-3 p-3">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-aerospace-700 text-sm">

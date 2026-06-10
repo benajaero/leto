@@ -1,4 +1,5 @@
 import { useStore } from '@/lib/store';
+import { useIsMobile } from '@/lib/hooks/useMediaQuery';
 import { ScoreBadge } from './ScoreBadge';
 import { MissionTimeline } from './MissionTimeline';
 import { formatDuration } from '@/lib/formatters';
@@ -8,6 +9,9 @@ export function IncidentDetail() {
   const incidents = useStore((s) => s.incidents);
   const output = useStore((s) => s.output);
   const scenario = useStore((s) => s.scenario);
+
+  const isMobile = useIsMobile();
+  const setMobileView = useStore((s) => s.setMobileView);
 
   const incident = incidents.find((i) => i.id === selectedId);
   const metrics = output?.incidentMetrics.find((m) => m.incidentId === selectedId);
@@ -27,8 +31,16 @@ export function IncidentDetail() {
 
   return (
     <div className="flex h-full flex-col border-l border-aerospace-700 bg-aerospace-900">
-      <div className="border-b border-aerospace-700 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-aerospace-700 px-4 py-3">
         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-aerospace-400">Incident Detail</span>
+        {isMobile && (
+          <button
+            onClick={() => setMobileView('list')}
+            className="rounded border border-aerospace-700 bg-aerospace-800 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-aerospace-300 active:bg-aerospace-700"
+          >
+            ← Back
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">

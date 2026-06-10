@@ -19,7 +19,14 @@ export const metadata: Metadata = {
   description: 'Low-Earth Triage & Operations. Satellite access planning for disaster response.',
   icons: {
     icon: '/favicon.ico'
-  }
+  },
+  manifest: '/manifest.json'
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover'
 };
 
 export default function RootLayout({
