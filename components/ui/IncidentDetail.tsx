@@ -49,10 +49,35 @@ export function IncidentDetail() {
     if (!output || !metrics?.servingSatellite) return null;
     const sat = output.satellites.find((s) => s.name === metrics.servingSatellite);
     if (!sat) return null;
-    const allContacts = Object.values(sat.stationContacts).flat();
-    if (!allContacts.length) return null;
-    allContacts.sort((a, b) => new Date(a.startUtc).getTime() - new Date(b.startUtc).getTime());
-    return { station: allContacts[0], time: allContacts[0].startUtc };
+    // Find the first station contact with a station name
+    const contacts = Object.entries(sat.stationContacts)
+      .flatMap(([stationId, windows]) =>
+        windows.map((w) => ({
+          stationId,
+          stationName: scenario.stations.find((st) => st.id === stationId)?.name || stationId,
+          startUtc: w.startUtc,
+          endUtc: w.endUtc,
+        }))
+      )
+      .sort((a, b) => new Date(a.startUtc).getTime() - new Date(b.startUtc).getTime());
+    if (!contacts.length) return null;
+    return contacts[0];
+  })();
+
+  // Calculate revisit gap from serving satellite's AOI access windows
+  const revisitGap = (() => {
+    if (!output || !metrics?.servingSatellite) return null;
+    const sat = output.satellites.find((s) => s.name === metrics.servingSatellite);
+    if (!sat || sat.aoiAccess.length < 2) return null;
+    const gaps: number[] = [];
+    for (let i = 1; i < sat.aoiAccess.length; i++) {
+      const prevEnd = new Date(sat.aoiAccess[i - 1].endUtc).getTime();
+      const nextStart = new Date(sat.aoiAccess[i].startUtc).getTime();
+      gaps.push((nextStart - prevEnd) / 1000);
+    }
+    const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+    const max = Math.max(...gaps);
+    return { avg, max, count: sat.aoiAccess.length };
   })();
 
   return (
@@ -104,6 +129,7 @@ export function IncidentDetail() {
             scenario={scenario}
             nextPass={nextPass}
             earliestDownlink={earliestDownlink}
+            revisitGap={revisitGap}
             dataSources={dataSources}
           />
         )}
@@ -120,21 +146,24 @@ function OverviewTab({
   scenario,
   nextPass,
   earliestDownlink,
+  revisitGap,
   dataSources,
 }: {
   incident: NonNullable<ReturnType<typeof useEngineStore.getState>['incidents'][number]>;
   metrics: NonNullable<ReturnType<typeof useEngineStore.getState>['output']>['incidentMetrics'][number] | undefined;
   scenario: ReturnType<typeof useEngineStore.getState>['scenario'];
   nextPass: { satName: string; time: string } | null;
-  earliestDownlink: { station: { startUtc: string }; time: string } | null;
+  earliestDownlink: { stationId: string; stationName: string; startUtc: string } | null;
+  revisitGap: { avg: number; max: number; count: number } | null;
   dataSources: ReturnType<typeof useUIStore.getState>['dataSources'];
 }) {
   const now = new Date();
 
-  const timeUntil = (utc: string) => {
+  const timeRelative = (utc: string) => {
     const diff = (new Date(utc).getTime() - now.getTime()) / 1000;
-    if (diff < 0) return 'now';
-    return formatDuration(diff);
+    if (diff < -60) return { text: `${formatDuration(Math.abs(diff))} ago`, past: true };
+    if (diff < 0) return { text: 'now', past: true };
+    return { text: `in ${formatDuration(diff)}`, past: false };
   };
 
   return (
@@ -146,31 +175,38 @@ function OverviewTab({
             <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Next Sat Pass</span>
             <p className="mt-1 text-sm font-semibold text-aerospace-200">{nextPass.satName}</p>
             <p className="font-mono text-xs text-cyan-400">{formatUtc(nextPass.time).slice(11, 19)} UTC</p>
-            <p className="text-[9px] text-aerospace-500">in {timeUntil(nextPass.time)}</p>
+            {(() => {
+              const rel = timeRelative(nextPass.time);
+              return <p className={`text-[9px] ${rel.past ? 'text-emerald-400' : 'text-aerospace-500'}`}>{rel.text}</p>;
+            })()}
           </div>
         )}
         {earliestDownlink && (
           <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
             <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Earliest Downlink</span>
-            <p className="mt-1 text-sm font-semibold text-aerospace-200">Canberra DSS43</p>
-            <p className="font-mono text-xs text-cyan-400">{formatUtc(earliestDownlink.time).slice(11, 19)} UTC</p>
-            <p className="text-[9px] text-aerospace-500">in {timeUntil(earliestDownlink.time)}</p>
+            <p className="mt-1 text-sm font-semibold text-aerospace-200">{earliestDownlink.stationName}</p>
+            <p className="font-mono text-xs text-cyan-400">{formatUtc(earliestDownlink.startUtc).slice(11, 19)} UTC</p>
+            {(() => {
+              const rel = timeRelative(earliestDownlink.startUtc);
+              return <p className={`text-[9px] ${rel.past ? 'text-emerald-400' : 'text-aerospace-500'}`}>{rel.text}</p>;
+            })()}
           </div>
         )}
       </div>
 
       {/* Revisit gap */}
-      {metrics && (
+      {revisitGap && (
         <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
           <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Revisit Gap</span>
+          <p className="text-[10px] text-aerospace-400">{revisitGap.count} passes · serving satellite</p>
           <div className="mt-2 flex gap-4">
             <div>
               <span className="text-[8px] text-aerospace-500">AVG</span>
-              <p className="font-mono text-sm font-bold text-aerospace-200">{formatDuration(metrics.tFirstObsSeconds)}</p>
+              <p className="font-mono text-sm font-bold text-aerospace-200">{formatDuration(revisitGap.avg)}</p>
             </div>
             <div>
               <span className="text-[8px] text-aerospace-500">MAX</span>
-              <p className="font-mono text-sm font-bold text-aerospace-200">{formatDuration(metrics.tFirstDownlinkSeconds)}</p>
+              <p className="font-mono text-sm font-bold text-aerospace-200">{formatDuration(revisitGap.max)}</p>
             </div>
           </div>
         </div>
