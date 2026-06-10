@@ -77,6 +77,7 @@ function CommandLayout() {
 
 export function CommandView() {
   const viewMode = useUIStore((s) => s.viewMode);
+  const isMobile = useIsMobile();
 
   return (
     <div className="flex h-screen flex-col bg-aerospace-950">
@@ -107,7 +108,7 @@ export function CommandView() {
         </div>
       )}
 
-      <DataSourceFooter />
+      {!isMobile && <DataSourceFooter />}
     </div>
   );
 }
