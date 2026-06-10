@@ -71,7 +71,13 @@ export function TacticalMapLeaflet() {
 
   // Load leaflet client-side once
   useEffect(() => {
-    if (typeof window === 'undefined' || leafletReady || L) return;
+    if (typeof window === 'undefined' || leafletReady) return;
+    // Module-level L survives across unmount/remount (mobile view switching).
+    // If already loaded from a previous mount, just flip state.
+    if (L) {
+      setLeafletReady(true);
+      return;
+    }
     let cancelled = false;
     (async () => {
       const leaflet = await import('leaflet');
