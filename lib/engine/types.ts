@@ -63,7 +63,7 @@ export type Scenario = {
 
 export type Incident = {
   id: string;
-  source: 'FIRMS' | 'GDACS';
+  source: 'FIRMS' | 'GDACS' | 'EONET' | 'USGS';
   type: string;
   hazardType?: string;
   severity?: number;

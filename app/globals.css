@@ -38,6 +38,38 @@ body {
   background: #3a3a4f;
 }
 
+/* Leaflet dark theme overrides */
+.leaflet-container {
+  background: #050507 !important;
+}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #0d0d12 !important;
+  border: 1px solid #1a1a24 !important;
+  color: #e2e2f0 !important;
+}
+.leaflet-control-attribution {
+  background: rgba(5, 5, 7, 0.8) !important;
+  color: #5a5a7a !important;
+  font-size: 9px !important;
+}
+.leaflet-control-scale-line {
+  background: rgba(5, 5, 7, 0.8) !important;
+  border: 1px solid #1a1a24 !important;
+  color: #8a8aaa !important;
+  font-family: var(--font-jetbrains), monospace !important;
+  font-size: 9px !important;
+}
+.leaflet-control-zoom a {
+  background: #0d0d12 !important;
+  border-color: #1a1a24 !important;
+  color: #8a8aaa !important;
+}
+.leaflet-control-zoom a:hover {
+  background: #1a1a24 !important;
+  color: #e2e2f0 !important;
+}
+
 /* Selection */
 ::selection {
   background: rgba(0, 212, 255, 0.2);

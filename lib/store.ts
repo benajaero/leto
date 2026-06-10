@@ -1,54 +1,6 @@
-import { create } from 'zustand';
-import type { Scenario, Incident, EngineOutput } from './engine/types';
-import { scenarios } from './data/scenarios';
+// Backward-compatible re-export of split stores
+// New code should import directly from '@/lib/stores/engineStore' or '@/lib/stores/uiStore'
 
-export type DataSourceStatus = {
-  name: string;
-  fetchedUtc: string;
-  fromCache: boolean;
-  disclaimer: string;
-  sourceUrl: string;
-  offline: boolean;
-};
-
-type StoreState = {
-  scenario: Scenario;
-  incidents: Incident[];
-  output: EngineOutput | null;
-  progress: number;
-  selectedIncidentId: string | null;
-  dataSources: DataSourceStatus[];
-  engineError: string | null;
-  viewMode: 'command' | 'explore';
-  mobileView: 'list' | 'map' | 'detail';
-  setScenario: (scenario: Scenario) => void;
-  setIncidents: (incidents: Incident[]) => void;
-  setOutput: (output: EngineOutput | null) => void;
-  setProgress: (progress: number) => void;
-  setSelectedIncidentId: (id: string | null) => void;
-  setDataSources: (sources: DataSourceStatus[]) => void;
-  setEngineError: (error: string | null) => void;
-  setViewMode: (mode: 'command' | 'explore') => void;
-  setMobileView: (mode: 'list' | 'map' | 'detail') => void;
-};
-
-export const useStore = create<StoreState>((set) => ({
-  scenario: scenarios[0],
-  incidents: [],
-  output: null,
-  progress: 0,
-  selectedIncidentId: null,
-  dataSources: [],
-  engineError: null,
-  viewMode: 'command',
-  mobileView: 'list',
-  setScenario: (scenario) => set({ scenario }),
-  setIncidents: (incidents) => set({ incidents }),
-  setOutput: (output) => set({ output }),
-  setProgress: (progress) => set({ progress }),
-  setSelectedIncidentId: (selectedIncidentId) => set({ selectedIncidentId }),
-  setDataSources: (dataSources) => set({ dataSources }),
-  setEngineError: (engineError) => set({ engineError }),
-  setViewMode: (viewMode) => set({ viewMode }),
-  setMobileView: (mobileView) => set({ mobileView })
-}));
+export { useEngineStore } from './stores/engineStore';
+export { useUIStore } from './stores/uiStore';
+export type { DataSourceStatus } from './stores/uiStore';

@@ -37,7 +37,7 @@ function parseCsv(text: string, ingestedUtc: string): Incident[] {
 
 export async function fetchFirms(
   bounds?: { latMin: number; latMax: number; lonMin: number; lonMax: number }
-): Promise<{ incidents: Incident[]; fetchedUtc: string; fromCache: boolean; sourceUrl: string; offline: boolean }> {
+): Promise<{ incidents: Incident[]; fetchedUtc: string; fromCache: boolean; sourceUrl: string; offline: boolean; usingLiveApi: boolean }> {
   const offline = isOffline();
   const cache = loadCache<Incident[]>(CACHE_KEY, 30);
 
@@ -51,20 +51,23 @@ export async function fetchFirms(
       fetchedUtc: stale?.fetchedUtc ?? new Date().toISOString(),
       fromCache: true,
       sourceUrl: SAMPLE_URL,
-      offline: true
+      offline: true,
+      usingLiveApi: false
     };
   }
 
   if (cache) {
     const incidents = cache.data.map((incident) => ({ ...incident, ingestedUtc: incident.ingestedUtc ?? cache.fetchedUtc }));
-    return { incidents, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL, offline: false };
+    return { incidents, fetchedUtc: cache.fetchedUtc, fromCache: true, sourceUrl: SAMPLE_URL, offline: false, usingLiveApi: false };
   }
 
-  const apiKey = (import.meta as any).env?.VITE_FIRMS_API_KEY as string | undefined;
+  const apiKey = typeof window !== 'undefined' ? localStorage.getItem('leto_firms_api_key') : null;
   let url = SAMPLE_URL;
+  let usingLiveApi = false;
   if (apiKey && bounds) {
     const { latMin, latMax, lonMin, lonMax } = bounds;
     url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/VIIRS_SNPP_NRT/${lonMin},${latMin},${lonMax},${latMax}/1`;
+    usingLiveApi = true;
   }
 
   try {
@@ -79,7 +82,8 @@ export async function fetchFirms(
         fetchedUtc: stale?.fetchedUtc ?? new Date().toISOString(),
         fromCache: true,
         sourceUrl: url,
-        offline: false
+        offline: false,
+        usingLiveApi
       };
     }
     const text = await response.text();
@@ -87,7 +91,7 @@ export async function fetchFirms(
     const incidents = parseCsv(text, nowUtc);
     const saved = saveCache(CACHE_KEY, incidents, 30);
     const withIngested = incidents.map((incident) => ({ ...incident, ingestedUtc: saved.fetchedUtc }));
-    return { incidents: withIngested, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url, offline: false };
+    return { incidents: withIngested, fetchedUtc: saved.fetchedUtc, fromCache: false, sourceUrl: url, offline: false, usingLiveApi };
   } catch {
     const stale = loadStaleCache<Incident[]>(CACHE_KEY);
     const incidents = stale
@@ -98,7 +102,8 @@ export async function fetchFirms(
       fetchedUtc: stale?.fetchedUtc ?? new Date().toISOString(),
       fromCache: true,
       sourceUrl: url,
-      offline: false
+      offline: false,
+      usingLiveApi
     };
   }
 }

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useStore } from '@/lib/store';
+import { useEngineStore } from '@/lib/stores/engineStore';
+import { useUIStore } from '@/lib/stores/uiStore';
 import type { AOIRect } from '@/lib/engine/types';
 
 function project(
@@ -16,11 +17,11 @@ function project(
 }
 
 export function TacticalMap() {
-  const scenario = useStore((s) => s.scenario);
-  const incidents = useStore((s) => s.incidents);
-  const selectedId = useStore((s) => s.selectedIncidentId);
-  const setSelectedId = useStore((s) => s.setSelectedIncidentId);
-  const output = useStore((s) => s.output);
+  const scenario = useEngineStore((s) => s.scenario);
+  const incidents = useEngineStore((s) => s.incidents);
+  const output = useEngineStore((s) => s.output);
+  const selectedId = useUIStore((s) => s.selectedIncidentId);
+  const setSelectedId = useUIStore((s) => s.setSelectedIncidentId);
 
   const width = 600;
   const height = 500;
