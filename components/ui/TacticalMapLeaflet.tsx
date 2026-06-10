@@ -95,6 +95,9 @@ export function TacticalMapLeaflet() {
       maxZoom: 18,
     });
 
+    // Ensure Leaflet detects container size after mount (critical for mobile flex layouts)
+    requestAnimationFrame(() => map.invalidateSize());
+
     leaflet.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
       subdomains: 'abcd',
@@ -109,12 +112,18 @@ export function TacticalMapLeaflet() {
     const { latMin, latMax, lonMin, lonMax } = scenario.aoi;
     map.fitBounds([[latMin, lonMin], [latMax, lonMax]], { padding: [40, 40] });
 
+    // Close layer panel on map tap (mobile)
+    map.on('click', () => {
+      if (isMobile) setLayersOpen(false);
+    });
+
     return () => {
       map.remove();
       leafletMap.current = null;
       layersRef.current = null;
       markersRef.current.clear();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leafletReady]);
 
   // Fly to AOI when scenario changes
@@ -243,9 +252,17 @@ export function TacticalMapLeaflet() {
           className: 'bg-aerospace-900 border border-aerospace-700 rounded text-aerospace-100',
         });
 
-        marker.on('click', () => setSelectedId(inc.id));
-        marker.on('mouseover', () => { setHoveredId(inc.id); marker.openPopup(); });
-        marker.on('mouseout', () => { setHoveredId(null); marker.closePopup(); });
+        marker.on('click', () => {
+          setSelectedId(inc.id);
+          // On mobile, open popup on tap; on desktop, popup follows hover
+          if (isMobile) {
+            marker.openPopup();
+          }
+        });
+        if (!isMobile) {
+          marker.on('mouseover', () => { setHoveredId(inc.id); marker.openPopup(); });
+          marker.on('mouseout', () => { setHoveredId(null); marker.closePopup(); });
+        }
 
         markersRef.current.set(inc.id, marker);
 
@@ -257,7 +274,7 @@ export function TacticalMapLeaflet() {
         }
       });
     }
-  }, [scenario, incidents, output, selectedId, hoveredId, showAoi, showStations, showIncidents, showFootprints, simplifiedTracks, buildPopup, setSelectedId]);
+  }, [scenario, incidents, output, selectedId, hoveredId, showAoi, showStations, showIncidents, showFootprints, simplifiedTracks, buildPopup, setSelectedId, isMobile]);
 
   // Debounced layer update
   const scheduleUpdate = useCallback(() => {
@@ -282,14 +299,14 @@ export function TacticalMapLeaflet() {
 
   if (!leafletReady) {
     return (
-      <div className="flex h-full items-center justify-center bg-aerospace-950">
+      <div className="flex flex-1 items-center justify-center bg-aerospace-950">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-aerospace-600 border-t-cyan-400" />
       </div>
     );
   }
 
   return (
-    <div className="relative flex h-full flex-col">
+    <div className="relative flex flex-1 flex-col min-h-0">
       {/* Map Layer Controls - collapsible on mobile */}
       <div className={`absolute left-3 top-3 z-[400] rounded border border-aerospace-700 bg-aerospace-900/90 backdrop-blur shadow-lg transition-all ${
         layersOpen ? 'p-2.5' : 'p-1'
@@ -330,10 +347,10 @@ export function TacticalMapLeaflet() {
         )}
       </div>
 
-      <div ref={mapRef} className="h-full w-full" />
+      <div ref={mapRef} className="flex-1 min-h-0 w-full" />
 
       {/* Legend */}
-      <div className="absolute bottom-10 right-3 z-[400] rounded border border-aerospace-700 bg-aerospace-900/90 px-2.5 py-1.5 backdrop-blur shadow-lg">
+      <div className={`absolute right-3 z-[400] rounded border border-aerospace-700 bg-aerospace-900/90 px-2.5 py-1.5 backdrop-blur shadow-lg ${isMobile ? 'bottom-16' : 'bottom-10'}`}>
         <div className="flex items-center gap-2 text-[9px] text-aerospace-400">
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-orange-500" />Fire</span>
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />Flood</span>

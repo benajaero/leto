@@ -41,10 +41,21 @@ body {
 /* Leaflet dark theme overrides */
 .leaflet-container {
   background: #050507 !important;
+  touch-action: none; /* Prevent browser zoom/pan from interfering with Leaflet */
 }
 /* Boost contrast on map tiles so labels are readable */
 .leaflet-tile-pane {
   filter: contrast(1.2) brightness(1.08);
+}
+/* Ensure Leaflet captures touch events properly */
+.leaflet-touch .leaflet-bar a {
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+}
+.leaflet-touch .leaflet-control-zoom-in,
+.leaflet-touch .leaflet-control-zoom-out {
+  font-size: 20px !important;
 }
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {

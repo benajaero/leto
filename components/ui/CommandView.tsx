@@ -25,7 +25,7 @@ function CommandLayout() {
           <div className="w-[340px] shrink-0">
             <IncidentList />
           </div>
-          <div className="flex-1">
+          <div className="flex flex-1 flex-col">
             <TacticalMapLeaflet />
           </div>
           <div className="w-[380px] shrink-0">
@@ -46,7 +46,7 @@ function CommandLayout() {
           <div className="w-[300px] shrink-0">
             <IncidentList />
           </div>
-          <div className="flex-1">
+          <div className="flex flex-1 flex-col">
             <TacticalMapLeaflet />
           </div>
           {selectedId && (
@@ -65,7 +65,7 @@ function CommandLayout() {
   // Mobile
   return (
     <>
-      <div className="flex-1 overflow-hidden pb-16">
+      <div className="flex flex-1 flex-col overflow-hidden pb-16">
         {mobileView === 'list' && <IncidentList />}
         {mobileView === 'map' && <TacticalMapLeaflet />}
         {mobileView === 'detail' && <IncidentDetail />}
@@ -85,7 +85,7 @@ export function CommandView() {
 
       {viewMode === 'command' && <CommandLayout />}
       {viewMode === 'map' && (
-        <div className="flex-1 overflow-hidden">
+        <div className="flex flex-1 flex-col overflow-hidden">
           <TacticalMapLeaflet />
         </div>
       )}
