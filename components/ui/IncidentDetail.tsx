@@ -96,7 +96,7 @@ export function IncidentDetail() {
         {isMobile && (
           <button
             onClick={() => setMobileView('list')}
-            className="ml-2 shrink-0 rounded border border-aerospace-700 bg-aerospace-800 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-aerospace-300 active:bg-aerospace-700"
+            className="ml-2 shrink-0 rounded border border-aerospace-700 bg-aerospace-800 px-3 py-1 text-readout font-semibold uppercase tracking-wider text-aerospace-300 active:bg-aerospace-700"
           >
             ← Back
           </button>
@@ -109,9 +109,9 @@ export function IncidentDetail() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition ${
+            className={`flex-1 px-3 py-2 text-readout font-bold uppercase tracking-wider transition ${
               activeTab === tab
-                ? 'border-b-2 border-cyan-400 text-cyan-400'
+                ? 'border-b-2 border-signal-400 text-signal-400'
                 : 'text-aerospace-500 hover:text-aerospace-300'
             }`}
           >
@@ -172,23 +172,23 @@ function OverviewTab({
       <div className="grid grid-cols-2 gap-2">
         {nextPass && (
           <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Next Sat Pass</span>
+            <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">Next Sat Pass</span>
             <p className="mt-1 text-sm font-semibold text-aerospace-200">{nextPass.satName}</p>
-            <p className="font-mono text-xs text-cyan-400">{formatUtc(nextPass.time).slice(11, 19)} UTC</p>
+            <p className="font-mono text-xs text-signal-400">{formatUtc(nextPass.time).slice(11, 19)} UTC</p>
             {(() => {
               const rel = timeRelative(nextPass.time);
-              return <p className={`text-[9px] ${rel.past ? 'text-emerald-400' : 'text-aerospace-500'}`}>{rel.text}</p>;
+              return <p className={`text-micro ${rel.past ? 'text-emerald-400' : 'text-aerospace-500'}`}>{rel.text}</p>;
             })()}
           </div>
         )}
         {earliestDownlink && (
           <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Earliest Downlink</span>
+            <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">Earliest Downlink</span>
             <p className="mt-1 text-sm font-semibold text-aerospace-200">{earliestDownlink.stationName}</p>
-            <p className="font-mono text-xs text-cyan-400">{formatUtc(earliestDownlink.startUtc).slice(11, 19)} UTC</p>
+            <p className="font-mono text-xs text-signal-400">{formatUtc(earliestDownlink.startUtc).slice(11, 19)} UTC</p>
             {(() => {
               const rel = timeRelative(earliestDownlink.startUtc);
-              return <p className={`text-[9px] ${rel.past ? 'text-emerald-400' : 'text-aerospace-500'}`}>{rel.text}</p>;
+              return <p className={`text-micro ${rel.past ? 'text-emerald-400' : 'text-aerospace-500'}`}>{rel.text}</p>;
             })()}
           </div>
         )}
@@ -197,15 +197,15 @@ function OverviewTab({
       {/* Revisit gap */}
       {revisitGap && (
         <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
-          <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Revisit Gap</span>
-          <p className="text-[10px] text-aerospace-400">{revisitGap.count} passes · serving satellite</p>
+          <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">Revisit Gap</span>
+          <p className="text-readout text-aerospace-400">{revisitGap.count} passes · serving satellite</p>
           <div className="mt-2 flex gap-4">
             <div>
-              <span className="text-[8px] text-aerospace-500">AVG</span>
+              <span className="text-micro text-aerospace-500">AVG</span>
               <p className="font-mono text-sm font-bold text-aerospace-200">{formatDuration(revisitGap.avg)}</p>
             </div>
             <div>
-              <span className="text-[8px] text-aerospace-500">MAX</span>
+              <span className="text-micro text-aerospace-500">MAX</span>
               <p className="font-mono text-sm font-bold text-aerospace-200">{formatDuration(revisitGap.max)}</p>
             </div>
           </div>
@@ -215,15 +215,15 @@ function OverviewTab({
       {/* Data health & confidence */}
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
-          <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Data Health</span>
+          <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">Data Health</span>
           <div className="mt-1 flex items-center gap-1.5">
             <div className="h-2 w-2 rounded-full bg-emerald-500" />
             <span className="text-xs text-aerospace-200">All data sources nominal</span>
           </div>
         </div>
         <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
-          <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Confidence</span>
-          <p className="mt-1 font-mono text-lg font-bold text-cyan-400">{incident.confidence ?? '--'}%</p>
+          <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">Confidence</span>
+          <p className="mt-1 font-mono text-lg font-bold text-signal-400">{incident.confidence ?? '--'}%</p>
         </div>
       </div>
 
@@ -234,12 +234,12 @@ function OverviewTab({
             <svg className="h-3.5 w-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            <span className="text-[9px] font-bold uppercase tracking-wider text-amber-400">Recommended Action</span>
+            <span className="text-micro font-bold uppercase tracking-wider text-amber-400">Recommended Action</span>
           </div>
           <p className="mt-1 text-xs text-aerospace-300">
             Task {metrics.servingSatellite || 'next available satellite'} for targeted collection to reduce revisit gap.
           </p>
-          <button className="mt-2 w-full rounded bg-cyan-500/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-cyan-400 transition hover:bg-cyan-500/30">
+          <button className="mt-2 w-full rounded bg-signal-500/20 px-3 py-1.5 text-readout font-bold uppercase tracking-wider text-signal-400 transition hover:bg-signal-500/30">
             Task Satellite
           </button>
         </div>
@@ -247,15 +247,15 @@ function OverviewTab({
 
       {/* Sources */}
       <div>
-        <span className="mb-2 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">Sources ({dataSources.length})</span>
+        <span className="mb-2 block text-micro font-bold uppercase tracking-wider text-aerospace-500">Sources ({dataSources.length})</span>
         <div className="space-y-1">
           {dataSources.map((ds) => (
             <div key={ds.name} className="flex items-center justify-between rounded border border-aerospace-800 bg-aerospace-850 px-2.5 py-1.5">
               <div className="flex items-center gap-2">
                 <div className={`h-1.5 w-1.5 rounded-full ${ds.offline ? 'bg-red-500' : 'bg-emerald-500'}`} />
-                <span className="text-[10px] text-aerospace-300">{ds.name}</span>
+                <span className="text-readout text-aerospace-300">{ds.name}</span>
               </div>
-              <span className="font-mono text-[9px] text-aerospace-500">{ds.fetchedUtc.slice(11, 16)} UTC</span>
+              <span className="font-mono text-micro text-aerospace-500">{ds.fetchedUtc.slice(11, 16)} UTC</span>
             </div>
           ))}
         </div>
@@ -270,21 +270,21 @@ function IntelligenceTab({ incident }: { incident: { type: string; lat: number; 
   return (
     <div className="space-y-4">
       <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
-        <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Sentinel Hub</span>
+        <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">Sentinel Hub</span>
         <p className="mt-1 text-xs text-aerospace-300">Satellite imagery search for this location.</p>
         <a
           href={`https://apps.sentinel-hub.com/eo-browser/?lat=${incident.lat}&lng=${incident.lon}&zoom=12`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block rounded border border-aerospace-600 bg-aerospace-800 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-aerospace-300 transition hover:text-aerospace-100"
+          className="mt-2 inline-block rounded border border-aerospace-600 bg-aerospace-800 px-3 py-1 text-readout font-semibold uppercase tracking-wider text-aerospace-300 transition hover:text-aerospace-100"
         >
           Open in EO Browser →
         </a>
       </div>
       <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
-        <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">Weather Context</span>
+        <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">Weather Context</span>
         <p className="mt-1 text-xs text-aerospace-300">Wind, precipitation, and cloud cover for mission planning.</p>
-        <p className="mt-1 text-[10px] text-aerospace-500">Weather overlay integration coming soon.</p>
+        <p className="mt-1 text-readout text-aerospace-500">Weather overlay integration coming soon.</p>
       </div>
     </div>
   );
@@ -294,7 +294,7 @@ function HistoryTab() {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-aerospace-400">
       <p className="text-xs">Observation history will appear here.</p>
-      <p className="mt-1 text-[10px] text-aerospace-500">Task a satellite to begin tracking.</p>
+      <p className="mt-1 text-readout text-aerospace-500">Task a satellite to begin tracking.</p>
     </div>
   );
 }

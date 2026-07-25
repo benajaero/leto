@@ -40,9 +40,9 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
+      className={`px-3 py-1.5 text-readout font-bold uppercase tracking-wider transition ${
         active
-          ? 'bg-cyan-500/20 text-cyan-400'
+          ? 'bg-signal-500/20 text-signal-400'
           : 'text-aerospace-400 hover:text-aerospace-200'
       }`}
     >

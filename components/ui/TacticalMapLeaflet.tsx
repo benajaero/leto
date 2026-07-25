@@ -8,15 +8,15 @@ import { formatDuration } from '@/lib/formatters';
 
 let L: typeof import('leaflet') | null = null;
 
-const COLORS = ['#00d4ff', '#f59e0b', '#10b981', '#c084fc', '#ef4444', '#f97316'];
+const COLORS = ['#c9a86c', '#f59e0b', '#34d399', '#c084fc', '#f87171', '#f97316'];
 const TRACK_MIN_KM = 15;
 
 function typeColor(type: string) {
   const t = type.toLowerCase();
   if (t.includes('fire')) return '#f97316';
-  if (t.includes('flood')) return '#00d4ff';
+  if (t.includes('flood')) return '#c9a86c';
   if (t.includes('cyclone') || t.includes('storm')) return '#c084fc';
-  if (t.includes('earthquake')) return '#ef4444';
+  if (t.includes('earthquake')) return '#f87171';
   return '#94a3b8';
 }
 
@@ -164,9 +164,9 @@ export function TacticalMapLeaflet() {
         </div>
         ${metrics ? `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;">
-          <div><span style="color:#5a5a7a">Score</span> <span style="color:${score >= 50 ? '#00d4ff' : '#f59e0b'}">${score}</span></div>
-          <div><span style="color:#5a5a7a">TTFO</span> <span style="color:#00d4ff">${formatDuration(metrics.tFirstObsSeconds)}</span></div>
-          <div><span style="color:#5a5a7a">TTDL</span> <span style="color:#00d4ff">${formatDuration(metrics.tFirstDownlinkSeconds)}</span></div>
+          <div><span style="color:#5a5a7a">Score</span> <span style="color:${score >= 50 ? '#c9a86c' : '#f59e0b'}">${score}</span></div>
+          <div><span style="color:#5a5a7a">TTFO</span> <span style="color:#c9a86c">${formatDuration(metrics.tFirstObsSeconds)}</span></div>
+          <div><span style="color:#5a5a7a">TTDL</span> <span style="color:#c9a86c">${formatDuration(metrics.tFirstDownlinkSeconds)}</span></div>
           <div><span style="color:#5a5a7a">Sat</span> <span style="color:#e2e2f0">${metrics.servingSatellite || '—'}</span></div>
         </div>
         ` : ''}
@@ -201,18 +201,18 @@ export function TacticalMapLeaflet() {
       const aoi = scenario.aoi;
       leaflet.rectangle(
         [[aoi.latMin, aoi.lonMin], [aoi.latMax, aoi.lonMax]],
-        { color: '#00d4ff', weight: 1.5, fillColor: '#00d4ff', fillOpacity: 0.04, dashArray: '6 3' }
-      ).bindTooltip('AOI', { permanent: true, direction: 'top', className: 'bg-transparent border-0 text-cyan-400 text-[10px] font-mono' }).addTo(layers);
+        { color: '#c9a86c', weight: 1.5, fillColor: '#c9a86c', fillOpacity: 0.04, dashArray: '6 3' }
+      ).bindTooltip('AOI', { permanent: true, direction: 'top', className: 'bg-transparent border-0 text-signal-400 text-readout font-mono' }).addTo(layers);
     }
 
     // Ground stations
     if (showStations) {
       scenario.stations.forEach((st) => {
         leaflet.circleMarker([st.lat, st.lon], {
-          radius: 5, fillColor: '#10b981', color: '#10b981', weight: 1.5, fillOpacity: 0.9,
-        }).bindTooltip(st.name, { direction: 'right', className: 'bg-aerospace-900 border border-aerospace-700 text-emerald-400 text-[10px] px-1' }).addTo(layers);
+          radius: 5, fillColor: '#34d399', color: '#34d399', weight: 1.5, fillOpacity: 0.9,
+        }).bindTooltip(st.name, { direction: 'right', className: 'bg-aerospace-900 border border-aerospace-700 text-emerald-400 text-readout px-1' }).addTo(layers);
         leaflet.circle([st.lat, st.lon], {
-          radius: 500000, fillColor: '#10b981', color: '#10b981', weight: 0.5, fillOpacity: 0.02,
+          radius: 500000, fillColor: '#34d399', color: '#34d399', weight: 0.5, fillOpacity: 0.02,
         }).addTo(layers);
       });
     }
@@ -221,7 +221,7 @@ export function TacticalMapLeaflet() {
     simplifiedTracks.forEach((sat) => {
       if (sat.track.length > 1) {
         const latlngs = sat.track.map((t) => [t.lat, t.lon] as [number, number]);
-        leaflet.polyline(latlngs, { color: sat.color, weight: 1.5, opacity: 0.5 }).bindTooltip(sat.name, { className: 'bg-aerospace-900 border-0 text-aerospace-300 text-[10px] px-1' }).addTo(layers);
+        leaflet.polyline(latlngs, { color: sat.color, weight: 1.5, opacity: 0.5 }).bindTooltip(sat.name, { className: 'bg-aerospace-900 border-0 text-aerospace-300 text-readout px-1' }).addTo(layers);
       }
       if (showFootprints) {
         sat.footprints.forEach((t) => {
@@ -248,7 +248,7 @@ export function TacticalMapLeaflet() {
         const marker = leaflet.circleMarker([inc.lat, inc.lon], {
           radius,
           fillColor: color,
-          color: isSelected ? '#00d4ff' : '#0a0a0f',
+          color: isSelected ? '#c9a86c' : '#0a0a0f',
           weight: isSelected ? 2.5 : 1,
           fillOpacity: 1,
         }).addTo(layers);
@@ -274,7 +274,7 @@ export function TacticalMapLeaflet() {
 
         if (isSelected) {
           leaflet.circleMarker([inc.lat, inc.lon], {
-            radius: 16, fillColor: 'transparent', color: '#00d4ff', weight: 1.5,
+            radius: 16, fillColor: 'transparent', color: '#c9a86c', weight: 1.5,
             dashArray: '4 3',
           }).addTo(layers);
         }
@@ -306,7 +306,7 @@ export function TacticalMapLeaflet() {
   if (!leafletReady) {
     return (
       <div className="flex flex-1 items-center justify-center bg-aerospace-950">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-aerospace-600 border-t-cyan-400" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-aerospace-600 border-t-signal-400" />
       </div>
     );
   }
@@ -330,18 +330,18 @@ export function TacticalMapLeaflet() {
         )}
         {(!isMobile || layersOpen) && (
           <div className={isMobile ? 'mt-2' : ''}>
-            <span className="mb-2 block text-[9px] font-bold uppercase tracking-wider text-aerospace-400">Map Layers</span>
+            <span className="mb-2 block text-micro font-bold uppercase tracking-wider text-aerospace-400">Map Layers</span>
             <div className="space-y-1.5">
               <LayerToggle label="Fires & Hotspots" checked={showIncidents} onChange={setShowIncidents} color="#f97316" />
-              <LayerToggle label="Ground Tracks" checked={showTracks} onChange={setShowTracks} color="#00d4ff" />
+              <LayerToggle label="Ground Tracks" checked={showTracks} onChange={setShowTracks} color="#c9a86c" />
               <LayerToggle label="Footprints" checked={showFootprints} onChange={setShowFootprints} color="#c084fc" />
-              <LayerToggle label="Ground Stations" checked={showStations} onChange={setShowStations} color="#10b981" />
-              <LayerToggle label="AOI Boundary" checked={showAoi} onChange={setShowAoi} color="#00d4ff" />
+              <LayerToggle label="Ground Stations" checked={showStations} onChange={setShowStations} color="#34d399" />
+              <LayerToggle label="AOI Boundary" checked={showAoi} onChange={setShowAoi} color="#c9a86c" />
             </div>
             <div className="mt-2 border-t border-aerospace-700 pt-2">
               <button
                 onClick={handleRecenter}
-                className="flex w-full items-center justify-center gap-1 rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1.5 text-[9px] font-bold uppercase tracking-wider text-aerospace-300 transition hover:text-aerospace-100"
+                className="flex w-full items-center justify-center gap-1 rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1.5 text-micro font-bold uppercase tracking-wider text-aerospace-300 transition hover:text-aerospace-100"
               >
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -357,9 +357,9 @@ export function TacticalMapLeaflet() {
 
       {/* Legend */}
       <div className={`absolute right-3 z-[400] rounded border border-aerospace-700 bg-aerospace-900/90 px-2.5 py-1.5 backdrop-blur shadow-lg ${isMobile ? 'bottom-16' : 'bottom-10'}`}>
-        <div className="flex items-center gap-2 text-[9px] text-aerospace-400">
+        <div className="flex items-center gap-2 text-micro text-aerospace-400">
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-orange-500" />Fire</span>
-          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />Flood</span>
+          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-signal-400" />Flood</span>
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-purple-400" />Storm</span>
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500" />Quake</span>
         </div>
@@ -371,8 +371,8 @@ export function TacticalMapLeaflet() {
 function LayerToggle({ label, checked, onChange, color }: { label: string; checked: boolean; onChange: (v: boolean) => void; color: string }) {
   return (
     <label className="flex cursor-pointer items-center gap-1.5 rounded px-1 py-0.5 transition hover:bg-aerospace-800/50 min-h-[32px]">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-cyan-500" />
-      <span className="text-[10px] text-aerospace-300">{label}</span>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-signal-500" />
+      <span className="text-readout text-aerospace-300">{label}</span>
       <span className="ml-auto h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />
     </label>
   );

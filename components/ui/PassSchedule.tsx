@@ -77,7 +77,7 @@ export function PassSchedule() {
   if (!output) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8 text-aerospace-400">
-        <div className="mb-2 h-6 w-6 animate-spin rounded-full border-2 border-aerospace-600 border-t-cyan-400" />
+        <div className="mb-2 h-6 w-6 animate-spin rounded-full border-2 border-aerospace-600 border-t-signal-400" />
         <p className="text-sm">Computing pass schedule…</p>
       </div>
     );
@@ -95,9 +95,9 @@ export function PassSchedule() {
   const FilterButton = ({ mode, label }: { mode: FilterMode; label: string }) => (
     <button
       onClick={() => setFilter(mode)}
-      className={`rounded border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
+      className={`rounded border px-2.5 py-1 text-readout font-bold uppercase tracking-wider transition ${
         filter === mode
-          ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-400'
+          ? 'border-signal-500/40 bg-signal-500/10 text-signal-400'
           : 'border-aerospace-700 bg-aerospace-800 text-aerospace-400 hover:text-aerospace-200'
       }`}
     >
@@ -112,7 +112,7 @@ export function PassSchedule() {
           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-aerospace-200">
             Pass Schedule
           </h2>
-          <p className="mt-0.5 font-mono text-[10px] text-aerospace-500">
+          <p className="mt-0.5 font-mono text-readout text-aerospace-500">
             {formatUtc(scenario.startTimeUtc).slice(0, 10)} · {scenario.horizonHours}h horizon
           </p>
         </div>
@@ -124,10 +124,10 @@ export function PassSchedule() {
           </div>
           <div className="hidden h-4 w-px bg-aerospace-700 sm:block" />
           <div className="hidden text-right sm:block">
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-aerospace-500">
+            <span className="text-micro font-semibold uppercase tracking-wider text-aerospace-500">
               Total Pass Time
             </span>
-            <p className="font-mono text-xs font-bold text-cyan-400">
+            <p className="font-mono text-xs font-bold text-signal-400">
               {formatDuration(totalDurationSec)}
             </p>
           </div>
@@ -138,22 +138,22 @@ export function PassSchedule() {
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 bg-aerospace-900/95 backdrop-blur">
             <tr className="border-b border-aerospace-700">
-              <th className="px-4 py-2 text-left text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+              <th className="px-4 py-2 text-left text-micro font-bold uppercase tracking-wider text-aerospace-500">
                 Satellite
               </th>
-              <th className="px-4 py-2 text-left text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+              <th className="px-4 py-2 text-left text-micro font-bold uppercase tracking-wider text-aerospace-500">
                 Type
               </th>
-              <th className="px-4 py-2 text-left text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+              <th className="px-4 py-2 text-left text-micro font-bold uppercase tracking-wider text-aerospace-500">
                 Start
               </th>
-              <th className="px-4 py-2 text-left text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+              <th className="px-4 py-2 text-left text-micro font-bold uppercase tracking-wider text-aerospace-500">
                 End
               </th>
-              <th className="px-4 py-2 text-right text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+              <th className="px-4 py-2 text-right text-micro font-bold uppercase tracking-wider text-aerospace-500">
                 Duration
               </th>
-              <th className="px-4 py-2 text-right text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+              <th className="px-4 py-2 text-right text-micro font-bold uppercase tracking-wider text-aerospace-500">
                 Max Elev
               </th>
             </tr>
@@ -171,9 +171,9 @@ export function PassSchedule() {
                   </td>
                   <td className="px-4 py-2.5">
                     <span
-                      className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                      className={`rounded px-1.5 py-0.5 text-readout font-bold uppercase tracking-wider ${
                         isAoi
-                          ? 'bg-cyan-500/10 text-cyan-400'
+                          ? 'bg-signal-500/10 text-signal-400'
                           : 'bg-amber-500/10 text-amber-400'
                       }`}
                     >
@@ -202,7 +202,7 @@ export function PassSchedule() {
       </div>
 
       <div className="border-t border-aerospace-700 bg-aerospace-900/80 px-4 py-2 backdrop-blur">
-        <p className="text-[10px] text-aerospace-500">
+        <p className="text-readout text-aerospace-500">
           Showing {passes.length} passes · {allPasses.length} total
         </p>
       </div>

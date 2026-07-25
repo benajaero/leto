@@ -60,15 +60,15 @@ export function ApiKeySettings({ onClose }: { onClose: () => void }) {
             <div className="mb-2 flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-orange-500" />
               <span className="text-xs font-semibold text-aerospace-200">NASA FIRMS</span>
-              <span className="ml-auto text-[9px] text-aerospace-500">Active Fire Data</span>
+              <span className="ml-auto text-micro text-aerospace-500">Active Fire Data</span>
             </div>
-            <p className="mb-2 text-[10px] leading-relaxed text-aerospace-400">
+            <p className="mb-2 text-readout leading-relaxed text-aerospace-400">
               Get a free API key from{' '}
               <a
                 href="https://firms.modaps.eosdis.nasa.gov/api/map_key/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-cyan-400 underline"
+                className="text-signal-400 underline"
               >
                 firms.modaps.eosdis.nasa.gov
               </a>
@@ -79,7 +79,7 @@ export function ApiKeySettings({ onClose }: { onClose: () => void }) {
               value={firmsKey}
               onChange={(e) => setFirmsKey(e.target.value)}
               placeholder="Paste your FIRMS API key..."
-              className="w-full rounded border border-aerospace-700 bg-aerospace-900 px-3 py-2 text-xs text-aerospace-100 outline-none transition focus:border-cyan-500/50"
+              className="w-full rounded border border-aerospace-700 bg-aerospace-900 px-3 py-2 text-xs text-aerospace-100 outline-none transition focus:border-signal-500/50"
             />
           </div>
 
@@ -88,21 +88,21 @@ export function ApiKeySettings({ onClose }: { onClose: () => void }) {
             <div className="mb-2 flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
               <span className="text-xs font-semibold text-aerospace-200">GDACS</span>
-              <span className="ml-auto text-[9px] text-emerald-400">No key needed</span>
+              <span className="ml-auto text-micro text-emerald-400">No key needed</span>
             </div>
           </div>
           <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
             <div className="mb-2 flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-cyan-500" />
+              <div className="h-2 w-2 rounded-full bg-signal-500" />
               <span className="text-xs font-semibold text-aerospace-200">NASA EONET</span>
-              <span className="ml-auto text-[9px] text-emerald-400">No key needed</span>
+              <span className="ml-auto text-micro text-emerald-400">No key needed</span>
             </div>
           </div>
           <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-3">
             <div className="mb-2 flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-purple-500" />
               <span className="text-xs font-semibold text-aerospace-200">USGS Earthquakes</span>
-              <span className="ml-auto text-[9px] text-emerald-400">No key needed</span>
+              <span className="ml-auto text-micro text-emerald-400">No key needed</span>
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ export function ApiKeySettings({ onClose }: { onClose: () => void }) {
         <div className="mt-5 flex gap-2">
           <button
             onClick={handleSave}
-            className="flex-1 rounded bg-cyan-500/20 px-4 py-2 text-xs font-bold uppercase tracking-wider text-cyan-400 transition hover:bg-cyan-500/30"
+            className="flex-1 rounded bg-signal-500/20 px-4 py-2 text-xs font-bold uppercase tracking-wider text-signal-400 transition hover:bg-signal-500/30"
           >
             {saved ? 'Saved!' : 'Save Keys'}
           </button>

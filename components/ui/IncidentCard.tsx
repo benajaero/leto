@@ -40,7 +40,7 @@ export function IncidentCard({
       onClick={onClick}
       className={`w-full text-left rounded border bg-aerospace-800/50 transition-all duration-200 min-h-[44px] ${
         selected
-          ? 'border-cyan-400/50 bg-cyan-500/5 shadow-glow-cyan'
+          ? 'border-signal-400/50 bg-signal-500/5 shadow-glow-signal'
           : 'border-aerospace-700 hover:border-aerospace-600 hover:bg-aerospace-750'
       } active:scale-[0.98]`}
     >
@@ -54,12 +54,12 @@ export function IncidentCard({
             <div className="flex items-center gap-2">
               <span className="truncate text-sm font-semibold text-aerospace-100">{incident.label}</span>
               {sev && (
-                <span className={`shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${sev.class}`}>
+                <span className={`shrink-0 rounded border px-1.5 py-0.5 text-micro font-bold uppercase tracking-wider ${sev.class}`}>
                   {sev.label}
                 </span>
               )}
             </div>
-            <p className="mt-0.5 font-mono text-[10px] text-aerospace-400">
+            <p className="mt-0.5 font-mono text-readout text-aerospace-400">
               {incident.lat.toFixed(2)}°, {incident.lon.toFixed(2)}° · {incident.source}
             </p>
           </div>
@@ -70,19 +70,19 @@ export function IncidentCard({
         {metrics && (
           <div className="mt-2.5 grid grid-cols-3 gap-2 border-t border-aerospace-700/50 pt-2">
             <div>
-              <span className="block text-[8px] font-semibold uppercase tracking-wider text-aerospace-500">Service</span>
-              <span className={`text-[10px] font-bold ${scoreColor(score)}`}>{scoreLabel(score)}</span>
-              <span className="ml-1 font-mono text-[9px] text-aerospace-400">{score}/100</span>
+              <span className="block text-micro font-semibold uppercase tracking-wider text-aerospace-500">Service</span>
+              <span className={`text-readout font-bold ${scoreColor(score)}`}>{scoreLabel(score)}</span>
+              <span className="ml-1 font-mono text-micro text-aerospace-400">{score}/100</span>
             </div>
             <div>
-              <span className="block text-[8px] font-semibold uppercase tracking-wider text-aerospace-500">TTFO</span>
-              <span className={`font-mono text-[10px] ${tobs !== null ? 'text-cyan-400' : 'text-aerospace-500'}`}>
+              <span className="block text-micro font-semibold uppercase tracking-wider text-aerospace-500">TTFO</span>
+              <span className={`font-mono text-readout ${tobs !== null ? 'text-signal-400' : 'text-aerospace-500'}`}>
                 {formatDuration(tobs)}
               </span>
             </div>
             <div>
-              <span className="block text-[8px] font-semibold uppercase tracking-wider text-aerospace-500">TTDL</span>
-              <span className={`font-mono text-[10px] ${tdl !== null ? 'text-cyan-400' : 'text-aerospace-500'}`}>
+              <span className="block text-micro font-semibold uppercase tracking-wider text-aerospace-500">TTDL</span>
+              <span className={`font-mono text-readout ${tdl !== null ? 'text-signal-400' : 'text-aerospace-500'}`}>
                 {formatDuration(tdl)}
               </span>
             </div>
@@ -90,7 +90,7 @@ export function IncidentCard({
         )}
 
         {/* Footer */}
-        <div className="mt-1.5 flex items-center gap-2 text-[9px] text-aerospace-500">
+        <div className="mt-1.5 flex items-center gap-2 text-micro text-aerospace-500">
           <span>Source: <span className="text-aerospace-400">{incident.source}</span></span>
           {metrics?.servingSatellite && (
             <>
@@ -98,7 +98,7 @@ export function IncidentCard({
               <span>Sensor: <span className="text-aerospace-400">{metrics.servingSatellite}</span></span>
             </>
           )}
-          <span className="ml-auto rounded bg-aerospace-700/50 px-1 py-0.5 text-[8px] font-bold uppercase tracking-wider text-emerald-400">Monitoring</span>
+          <span className="ml-auto rounded bg-aerospace-700/50 px-1 py-0.5 text-micro font-bold uppercase tracking-wider text-emerald-400">Monitoring</span>
         </div>
       </div>
     </button>

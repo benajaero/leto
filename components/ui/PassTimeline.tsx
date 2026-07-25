@@ -52,7 +52,7 @@ export function PassTimeline() {
           rowIdx,
           startSec: Math.max(0, (ws - start) / 1000),
           endSec: Math.min(totalSec, (we - start) / 1000),
-          color: '#00d4ff',
+          color: '#c9a86c',
           label: 'IMG',
           tooltip: `${sat.name} · AOI Access · ${formatUtc(w.startUtc).slice(11, 16)}–${formatUtc(w.endUtc).slice(11, 16)} · ${formatDuration(dur)}`,
         });
@@ -95,7 +95,7 @@ export function PassTimeline() {
             rowIdx,
             startSec: Math.max(0, (ws - start) / 1000),
             endSec: Math.min(totalSec, (we - start) / 1000),
-            color: '#10b981',
+            color: '#34d399',
             label: sat.name.slice(0, 8),
             tooltip: `${st.name} · Contact · ${sat.name} · ${formatUtc(w.startUtc).slice(11, 16)}–${formatUtc(w.endUtc).slice(11, 16)} · ${formatDuration(dur)}`,
           });
@@ -136,7 +136,7 @@ export function PassTimeline() {
   if (!output) {
     return (
       <div className="flex h-full items-center justify-center text-aerospace-400">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-aerospace-600 border-t-cyan-400" />
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-aerospace-600 border-t-signal-400" />
         <span className="ml-2 text-xs">Computing timeline…</span>
       </div>
     );
@@ -148,13 +148,13 @@ export function PassTimeline() {
       <div className="flex items-center justify-between border-b border-aerospace-700 bg-aerospace-900/80 px-4 py-2 backdrop-blur">
         <div>
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-aerospace-200">Upcoming Access & Downlink Windows</span>
-          <span className="ml-2 font-mono text-[10px] text-aerospace-500">
+          <span className="ml-2 font-mono text-readout text-aerospace-500">
             {formatUtc(new Date(startTime)).slice(0, 10)} UTC
           </span>
         </div>
         <div className="flex rounded border border-aerospace-700 bg-aerospace-800 overflow-hidden">
-          <button onClick={() => setHoursRange(12)} className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider transition ${hoursRange === 12 ? 'bg-cyan-500/20 text-cyan-400' : 'text-aerospace-400'}`}>12h</button>
-          <button onClick={() => setHoursRange(24)} className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider transition ${hoursRange === 24 ? 'bg-cyan-500/20 text-cyan-400' : 'text-aerospace-400'}`}>24h</button>
+          <button onClick={() => setHoursRange(12)} className={`px-2.5 py-1 text-micro font-bold uppercase tracking-wider transition ${hoursRange === 12 ? 'bg-signal-500/20 text-signal-400' : 'text-aerospace-400'}`}>12h</button>
+          <button onClick={() => setHoursRange(24)} className={`px-2.5 py-1 text-micro font-bold uppercase tracking-wider transition ${hoursRange === 24 ? 'bg-signal-500/20 text-signal-400' : 'text-aerospace-400'}`}>24h</button>
         </div>
       </div>
 
@@ -176,16 +176,16 @@ export function PassTimeline() {
           {timeTicks.map((t, i) => (
             <g key={i}>
               <line x1={t.x} y1={HEADER_HEIGHT} x2={t.x} y2={height} stroke="#1a1a24" strokeWidth="1" />
-              <text x={t.x} y={18} fill="#8a8aaa" fontSize="9" textAnchor="middle" fontFamily="var(--font-jetbrains)">{t.label}</text>
-              <text x={t.x} y={28} fill="#5a5a7a" fontSize="8" textAnchor="middle" fontFamily="var(--font-jetbrains)">{t.date}</text>
+              <text x={t.x} y={18} fill="#8a8aaa" fontSize="11" textAnchor="middle" fontFamily="var(--font-jetbrains)">{t.label}</text>
+              <text x={t.x} y={28} fill="#5a5a7a" fontSize="11" textAnchor="middle" fontFamily="var(--font-jetbrains)">{t.date}</text>
             </g>
           ))}
 
           {/* Now indicator */}
           {nowX !== null && (
             <g>
-              <line x1={nowX} y1={HEADER_HEIGHT} x2={nowX} y2={height} stroke="#ef4444" strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
-              <rect x={nowX - 16} y={HEADER_HEIGHT - 2} width={32} height={12} rx={2} fill="#ef4444" opacity="0.9" />
+              <line x1={nowX} y1={HEADER_HEIGHT} x2={nowX} y2={height} stroke="#f87171" strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
+              <rect x={nowX - 16} y={HEADER_HEIGHT - 2} width={32} height={12} rx={2} fill="#f87171" opacity="0.9" />
               <text x={nowX} y={HEADER_HEIGHT + 7} fill="#fff" fontSize="7" textAnchor="middle" fontFamily="var(--font-jetbrains)" fontWeight="bold">NOW</text>
             </g>
           )}
@@ -198,7 +198,7 @@ export function PassTimeline() {
                 <rect x={LEFT_WIDTH} y={HEADER_HEIGHT + i * ROW_HEIGHT} width={chartWidth + RIGHT_PADDING} height={ROW_HEIGHT} fill="#0a0a0f" opacity="0.5" />
               )}
               {/* Row label */}
-              <text x={8} y={HEADER_HEIGHT + i * ROW_HEIGHT + ROW_HEIGHT / 2 + 4} fill="#b8b8d0" fontSize="10" fontFamily="var(--font-jetbrains)" fontWeight="600">{name}</text>
+              <text x={8} y={HEADER_HEIGHT + i * ROW_HEIGHT + ROW_HEIGHT / 2 + 4} fill="#b8b8d0" fontSize="11" fontFamily="var(--font-jetbrains)" fontWeight="600">{name}</text>
               {/* Row separator */}
               <line x1={LEFT_WIDTH} y1={HEADER_HEIGHT + i * ROW_HEIGHT} x2={width} y2={HEADER_HEIGHT + i * ROW_HEIGHT} stroke="#1a1a24" strokeWidth="1" />
             </g>
@@ -225,7 +225,7 @@ export function PassTimeline() {
                   strokeWidth={isHovered ? 1 : 0.5}
                 />
                 {w > 28 && (
-                  <text x={x + 4} y={y + 12} fill="#050507" fontSize="8" fontFamily="var(--font-jetbrains)" fontWeight="bold">{bar.label}</text>
+                  <text x={x + 4} y={y + 12} fill="#050507" fontSize="11" fontFamily="var(--font-jetbrains)" fontWeight="bold">{bar.label}</text>
                 )}
               </g>
             );
@@ -235,22 +235,22 @@ export function PassTimeline() {
         {/* Tooltip */}
         {hoveredBar && (
           <div
-            className="pointer-events-none absolute z-[500] rounded border border-aerospace-700 bg-aerospace-900/95 px-2.5 py-1.5 text-[10px] text-aerospace-200 shadow-xl backdrop-blur"
+            className="pointer-events-none absolute z-[500] rounded border border-aerospace-700 bg-aerospace-900/95 px-2.5 py-1.5 text-readout text-aerospace-200 shadow-xl backdrop-blur"
             style={{ left: Math.min(mousePos.x + 12, width - 200), top: Math.max(mousePos.y - 30, 0) }}
           >
-            <p className="font-semibold text-cyan-400">{hoveredBar.tooltip}</p>
+            <p className="font-semibold text-signal-400">{hoveredBar.tooltip}</p>
           </div>
         )}
       </div>
 
       {/* Legend */}
       <div className="flex items-center gap-5 border-t border-aerospace-700 bg-aerospace-900/80 px-4 py-1.5 backdrop-blur">
-        <LegendItem color="#00d4ff" label="AOI Access (Imaging)" />
+        <LegendItem color="#c9a86c" label="AOI Access (Imaging)" />
         <LegendItem color="#c084fc" label="Downlink" />
-        <LegendItem color="#10b981" label="Ground Station Contact" />
+        <LegendItem color="#34d399" label="Ground Station Contact" />
         <div className="ml-auto flex items-center gap-1.5">
           <span className="h-3 w-px bg-aerospace-700" />
-          <span className="text-[9px] text-aerospace-500">Red dashed = now</span>
+          <span className="text-micro text-aerospace-500">Red dashed = now</span>
         </div>
       </div>
     </div>
@@ -261,7 +261,7 @@ function LegendItem({ color, label }: { color: string; label: string }) {
   return (
     <div className="flex items-center gap-1.5">
       <span className="h-2.5 w-4 rounded-sm" style={{ backgroundColor: color }} />
-      <span className="text-[9px] text-aerospace-400">{label}</span>
+      <span className="text-micro text-aerospace-400">{label}</span>
     </div>
   );
 }

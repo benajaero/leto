@@ -8,7 +8,7 @@ export function ScoreBadge({ score, size = 'md' }: { score: number; size?: 'sm' 
   };
 
   const ringSizes = {
-    sm: 'w-10 h-10 text-[10px]',
+    sm: 'w-10 h-10 text-readout',
     md: 'w-14 h-14 text-xs',
     lg: 'w-20 h-20 text-sm'
   };

@@ -80,7 +80,7 @@ export function ScenarioEditor() {
         <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-aerospace-200">
           Scenario Editor
         </h2>
-        <p className="mt-0.5 text-[10px] text-aerospace-500">
+        <p className="mt-0.5 text-readout text-aerospace-500">
           Configure mission parameters and recompute
         </p>
       </div>
@@ -88,20 +88,20 @@ export function ScenarioEditor() {
       <div className="flex-1 space-y-6 p-4">
         {/* Name */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             Scenario Name
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded border border-aerospace-700 bg-aerospace-800 px-3 py-2 text-sm text-aerospace-100 outline-none transition focus:border-cyan-500/50"
+            className="w-full rounded border border-aerospace-700 bg-aerospace-800 px-3 py-2 text-sm text-aerospace-100 outline-none transition focus:border-signal-500/50"
           />
         </div>
 
         {/* AOI Presets */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             AOI Preset
           </label>
           <div className="flex flex-wrap gap-1.5">
@@ -109,7 +109,7 @@ export function ScenarioEditor() {
               <button
                 key={p.name}
                 onClick={() => applyPresetAOI(p)}
-                className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1 text-[10px] text-aerospace-300 transition hover:border-aerospace-600 hover:text-aerospace-100"
+                className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1 text-readout text-aerospace-300 transition hover:border-aerospace-600 hover:text-aerospace-100"
               >
                 {p.name}
               </button>
@@ -119,7 +119,7 @@ export function ScenarioEditor() {
 
         {/* AOI Coordinates */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             AOI Bounds
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -148,7 +148,7 @@ export function ScenarioEditor() {
 
         {/* Horizon */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             Horizon
           </label>
           <SegmentedControl
@@ -164,7 +164,7 @@ export function ScenarioEditor() {
 
         {/* Timestep */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             Timestep
           </label>
           <SegmentedControl
@@ -180,20 +180,20 @@ export function ScenarioEditor() {
 
         {/* Start Time */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             Start Time (UTC)
           </label>
           <input
             type="datetime-local"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            className="w-full rounded border border-aerospace-700 bg-aerospace-800 px-3 py-2 text-sm text-aerospace-100 outline-none transition focus:border-cyan-500/50"
+            className="w-full rounded border border-aerospace-700 bg-aerospace-800 px-3 py-2 text-sm text-aerospace-100 outline-none transition focus:border-signal-500/50"
           />
         </div>
 
         {/* Satellites */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             Satellites ({selectedSatIds.size})
           </label>
           <div className="space-y-1">
@@ -206,10 +206,10 @@ export function ScenarioEditor() {
                   type="checkbox"
                   checked={selectedSatIds.has(sat.id)}
                   onChange={() => toggleSat(sat.id)}
-                  className="h-3.5 w-3.5 accent-cyan-500"
+                  className="h-3.5 w-3.5 accent-signal-500"
                 />
                 <span className="text-xs text-aerospace-200">{sat.name}</span>
-                <span className="ml-auto text-[9px] text-aerospace-500">
+                <span className="ml-auto text-micro text-aerospace-500">
                   {sat.type === 'tle' ? 'TLE' : `${sat.altitudeKm}km`}
                 </span>
               </label>
@@ -219,7 +219,7 @@ export function ScenarioEditor() {
 
         {/* Stations */}
         <div>
-          <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-aerospace-500">
+          <label className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">
             Ground Stations ({selectedStationIds.size})
           </label>
           <div className="space-y-1">
@@ -232,10 +232,10 @@ export function ScenarioEditor() {
                   type="checkbox"
                   checked={selectedStationIds.has(st.id)}
                   onChange={() => toggleStation(st.id)}
-                  className="h-3.5 w-3.5 accent-cyan-500"
+                  className="h-3.5 w-3.5 accent-signal-500"
                 />
                 <span className="text-xs text-aerospace-200">{st.name}</span>
-                <span className="ml-auto font-mono text-[9px] text-aerospace-500">
+                <span className="ml-auto font-mono text-micro text-aerospace-500">
                   {st.lat.toFixed(1)}°, {st.lon.toFixed(1)}°
                 </span>
               </label>
@@ -248,12 +248,12 @@ export function ScenarioEditor() {
           <button
             onClick={apply}
             disabled={!isValid}
-            className="w-full rounded bg-cyan-500/20 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-cyan-400 transition hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-cyan-500/20"
+            className="w-full rounded bg-signal-500/20 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-signal-400 transition hover:bg-signal-500/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-signal-500/20"
           >
             {isValid ? 'Apply Scenario & Recompute' : 'Invalid Configuration'}
           </button>
           {!isValid && (
-            <p className="mt-1.5 text-center text-[10px] text-status-bad">
+            <p className="mt-1.5 text-center text-readout text-status-bad">
               Select at least one satellite and one station, and ensure AOI bounds are valid.
             </p>
           )}
@@ -274,13 +274,13 @@ function NumberInput({
 }) {
   return (
     <div>
-      <span className="mb-0.5 block text-[9px] text-aerospace-500">{label}</span>
+      <span className="mb-0.5 block text-micro text-aerospace-500">{label}</span>
       <input
         type="number"
         step={0.1}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1.5 font-mono text-xs text-aerospace-100 outline-none transition focus:border-cyan-500/50"
+        className="w-full rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1.5 font-mono text-xs text-aerospace-100 outline-none transition focus:border-signal-500/50"
       />
     </div>
   );
@@ -301,9 +301,9 @@ function SegmentedControl<T extends string | number>({
         <button
           key={String(opt.value)}
           onClick={() => onChange(opt.value)}
-          className={`flex-1 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
+          className={`flex-1 px-3 py-1.5 text-readout font-bold uppercase tracking-wider transition ${
             value === opt.value
-              ? 'bg-cyan-500/20 text-cyan-400'
+              ? 'bg-signal-500/20 text-signal-400'
               : 'text-aerospace-400 hover:text-aerospace-200'
           }`}
         >

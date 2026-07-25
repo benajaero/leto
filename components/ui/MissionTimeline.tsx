@@ -35,7 +35,7 @@ export function MissionTimeline({ metrics, startTime }: { metrics: IncidentMetri
 
   return (
     <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-4">
-      <h3 className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-aerospace-400">Mission Timeline</h3>
+      <h3 className="mb-3 text-readout font-bold uppercase tracking-[0.2em] text-aerospace-400">Mission Timeline</h3>
       <div className="relative flex flex-col gap-0">
         {events.map((event, i) => (
           <div key={event.label} className="relative flex gap-3 pb-4 last:pb-0">
@@ -45,9 +45,9 @@ export function MissionTimeline({ metrics, startTime }: { metrics: IncidentMetri
             <div
               className={`relative z-10 mt-0.5 h-3.5 w-3.5 shrink-0 rounded-full border-2 ${
                 event.status === 'past'
-                  ? 'border-aerospace-500 bg-aerospace-500'
+                  ? 'border-aerospace-550 bg-aerospace-550'
                   : event.status === 'future'
-                  ? 'border-cyan-400 bg-aerospace-800 shadow-glow-cyan'
+                  ? 'border-signal-400 bg-aerospace-800 shadow-glow-signal'
                   : 'border-aerospace-700 bg-aerospace-800'
               }`}
             />
@@ -55,14 +55,14 @@ export function MissionTimeline({ metrics, startTime }: { metrics: IncidentMetri
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-aerospace-200">{event.label}</span>
                 <span
-                  className={`font-mono text-[10px] ${
-                    event.status === 'future' ? 'text-cyan-400' : 'text-aerospace-500'
+                  className={`font-mono text-readout ${
+                    event.status === 'future' ? 'text-signal-400' : 'text-aerospace-500'
                   }`}
                 >
                   {event.time}
                 </span>
               </div>
-              <span className="text-[10px] text-aerospace-400">{event.detail}</span>
+              <span className="text-readout text-aerospace-400">{event.detail}</span>
             </div>
           </div>
         ))}

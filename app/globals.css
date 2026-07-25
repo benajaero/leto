@@ -97,18 +97,44 @@ body {
   overflow: hidden;
 }
 
+/* === FOCUS ===
+   Two-tone so the ring reads against the panel, the map, and gold fills alike.
+   There was no author focus style at all, so the ring was whatever the browser
+   defaulted to over a near-black surface. */
+:focus-visible {
+  outline: 2px solid #050507;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px #c9a86c;
+  border-radius: 3px;
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid Highlight;
+    box-shadow: none;
+  }
+}
+
+/* === REDUCED MOTION ===
+   A live operations surface still has to show that state changed; only the
+   decorative pulses stop. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-play-state: paused;
+    transition-duration: 120ms;
+  }
+}
+
 /* Selection */
 ::selection {
-  background: rgba(0, 212, 255, 0.2);
+  background: rgba(201, 168, 108, 0.28);
   color: #e2e2f0;
 }
 
-/* Grid background utility */
-.bg-grid {
-  background-image: linear-gradient(to right, #1a1a24 1px, transparent 1px),
-    linear-gradient(to bottom, #1a1a24 1px, transparent 1px);
-  background-size: 40px 40px;
-}
+/* The .bg-grid utility was defined here and never used. The map itself is the
+   measured surface on this product; it does not need a second grid behind it. */
 
 /* Telemetry text styling */
 .telemetry {
@@ -132,12 +158,12 @@ body {
 }
 
 /* Glow text */
-.text-glow-cyan {
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+.text-glow-signal {
+  text-shadow: 0 0 10px rgba(201, 168, 108, 0.5);
 }
 
 .text-glow-green {
-  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
 }
 
 .text-glow-amber {
@@ -145,5 +171,5 @@ body {
 }
 
 .text-glow-red {
-  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
 }

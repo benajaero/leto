@@ -64,7 +64,7 @@ export function IncidentList() {
       <div className="border-b border-aerospace-700 px-4 py-3">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-aerospace-300">Incident Queue</h2>
-          <span className="font-mono text-[10px] text-aerospace-400">
+          <span className="font-mono text-readout text-aerospace-400">
             {coveredCount}/{filtered.length} covered
           </span>
         </div>
@@ -72,7 +72,7 @@ export function IncidentList() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-aerospace-300 focus:border-cyan-400 focus:outline-none"
+            className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1 text-readout font-semibold uppercase tracking-wider text-aerospace-300 focus:border-signal-400 focus:outline-none"
           >
             {types.map((t) => (
               <option key={t} value={t}>{t === 'all' ? 'All Types' : t}</option>
@@ -81,7 +81,7 @@ export function IncidentList() {
           <select
             value={minScore}
             onChange={(e) => setMinScore(Number(e.target.value))}
-            className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-aerospace-300 focus:border-cyan-400 focus:outline-none"
+            className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-1 text-readout font-semibold uppercase tracking-wider text-aerospace-300 focus:border-signal-400 focus:outline-none"
           >
             <option value={0}>All Scores</option>
             <option value={50}>Score ≥ 50</option>
@@ -112,18 +112,18 @@ export function IncidentList() {
 
       {/* Metrics Footer */}
       <div className="border-t border-aerospace-700 bg-aerospace-850 px-3 py-2">
-        <span className="mb-1.5 block text-[8px] font-bold uppercase tracking-wider text-aerospace-500">Metrics (Live)</span>
+        <span className="mb-1.5 block text-micro font-bold uppercase tracking-wider text-aerospace-500">Metrics (Live)</span>
         <div className="grid grid-cols-4 gap-2">
           <MetricBox label="Time to First Obs" value={formatDuration(avgTobs)} target="< 2h" targetMet={avgTobs !== null && avgTobs < 7200} />
           <MetricBox label="Time to Downlink" value={formatDuration(avgTdl)} target="< 8h" targetMet={avgTdl !== null && avgTdl < 28800} />
           <MetricBox label="Avg Revisit Gap" value={formatDuration(revisitStats?.avgGapSeconds ?? null)} target="< 4h" targetMet={revisitStats ? revisitStats.avgGapSeconds < 14400 : false} />
           <MetricBox label="Max Revisit Gap" value={formatDuration(revisitStats?.maxGapSeconds ?? null)} target="< 12h" targetMet={revisitStats ? revisitStats.maxGapSeconds < 43200 : false} warn={revisitStats ? revisitStats.maxGapSeconds >= 43200 : false} />
         </div>
-        <div className="mt-1.5 flex items-center justify-between text-[9px] text-aerospace-500">
+        <div className="mt-1.5 flex items-center justify-between text-micro text-aerospace-500">
           <span>Last updated: {output?.generatedUtc ? new Date(output.generatedUtc).toISOString().slice(11, 16) : '--'} UTC</span>
           <button
             onClick={() => window.location.reload()}
-            className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-aerospace-400 transition hover:text-aerospace-200"
+            className="rounded border border-aerospace-700 bg-aerospace-800 px-2 py-0.5 text-micro font-bold uppercase tracking-wider text-aerospace-400 transition hover:text-aerospace-200"
           >
             Refresh
           </button>
@@ -137,8 +137,8 @@ function MetricBox({ label, value, target, targetMet, warn }: { label: string; v
   return (
     <div className="rounded border border-aerospace-700 bg-aerospace-800/50 p-1.5">
       <span className="block text-[7px] font-semibold uppercase tracking-wider text-aerospace-500">{label}</span>
-      <span className={`block font-mono text-[10px] font-bold ${warn ? 'text-status-bad' : 'text-aerospace-200'}`}>{value}</span>
-      <span className={`text-[8px] ${targetMet ? 'text-emerald-400' : warn ? 'text-status-warn' : 'text-aerospace-500'}`}>
+      <span className={`block font-mono text-readout font-bold ${warn ? 'text-status-bad' : 'text-aerospace-200'}`}>{value}</span>
+      <span className={`text-micro ${targetMet ? 'text-emerald-400' : warn ? 'text-status-warn' : 'text-aerospace-500'}`}>
         Target: {target} {targetMet ? '✓' : ''}
       </span>
     </div>
