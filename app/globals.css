@@ -48,10 +48,12 @@ body {
   filter: contrast(1.2) brightness(1.08);
 }
 /* Ensure Leaflet captures touch events properly */
+/* Touch devices get the same 44px floor — this was 36px, and it is the
+   control people reach for most on a map. */
 .leaflet-touch .leaflet-bar a {
-  width: 36px !important;
-  height: 36px !important;
-  line-height: 36px !important;
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
 }
 .leaflet-touch .leaflet-control-zoom-in,
 .leaflet-touch .leaflet-control-zoom-out {
@@ -63,25 +65,32 @@ body {
   border: 1px solid #1a1a24 !important;
   color: #e2e2f0 !important;
 }
+/* Map chrome. These overrides sat outside the Tailwind ramp and kept the old
+   values: 9px attribution in #5a5a7a measured 2.93:1. Attribution is a
+   licensing requirement — it has to be readable. */
 .leaflet-control-attribution {
-  background: rgba(5, 5, 7, 0.8) !important;
-  color: #5a5a7a !important;
-  font-size: 9px !important;
+  background: rgba(5, 5, 7, 0.85) !important;
+  color: #9494ab !important; /* 6.54:1 */
+  font-size: 11px !important;
+}
+.leaflet-control-attribution a {
+  color: #a0a0b5 !important; /* 7.56:1 */
 }
 .leaflet-control-scale-line {
-  background: rgba(5, 5, 7, 0.8) !important;
-  border: 1px solid #1a1a24 !important;
-  color: #8a8aaa !important;
+  background: rgba(5, 5, 7, 0.85) !important;
+  border: 1px solid #2a2a3a !important;
+  color: #a0a0b5 !important; /* 7.56:1 */
   font-family: var(--font-jetbrains), monospace !important;
-  font-size: 9px !important;
+  font-size: 11px !important;
 }
 .leaflet-control-zoom a {
   background: #0d0d12 !important;
-  border-color: #1a1a24 !important;
-  color: #8a8aaa !important;
-  width: 32px !important;
-  height: 32px !important;
-  line-height: 32px !important;
+  border-color: #2a2a3a !important;
+  color: #a0a0b5 !important; /* 7.56:1 */
+  /* 32px was under the 44px touch floor on the primary map control. */
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
   font-size: 18px !important;
 }
 .leaflet-control-zoom a:hover {
